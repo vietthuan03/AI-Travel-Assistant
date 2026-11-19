@@ -1,0 +1,22 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@id/tools_graph" app:startDestination="@id/tools_fragment">
+<fragment android:id="@id/tools_fragment" android:name="com.example.travelassistant.feature.tools.ToolsFragment" android:label="@string/tools_title">
+<argument android:name="screenKey" app:argType="string" android:defaultValue="T01"/>
+<argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
+<argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
+</fragment>
+<fragment android:id="@id/currency_fragment" android:name="com.example.travelassistant.feature.tools.CurrencyFragment" android:label="@string/currency_title">
+<argument android:name="screenKey" app:argType="string" android:defaultValue="T02"/>
+<argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
+<argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
+</fragment>
+<fragment android:id="@id/time_fragment" android:name="com.example.travelassistant.feature.tools.WorldTimeFragment" android:label="@string/time_title">
+<argument android:name="screenKey" app:argType="string" android:defaultValue="T03"/>
+<argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
+<argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
+</fragment>
+<fragment android:id="@id/weather_fragment" android:name="com.example.travelassistant.feature.tools.WeatherFragment" android:label="@string/weather_title">
+<argument android:name="screenKey" app:argType="string" android:defaultValue="T04"/>
+<argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
+<argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
+</fragment>
+</navigation>

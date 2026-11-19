@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Handoff"
+  short_description: "Lưu thay đổi và kết quả kiểm thử dự án"
+  default_prompt: "Dùng $project-handoff để cập nhật HANDOFF.md theo thay đổi thực tế, kết quả kiểm thử và phần còn chờ."

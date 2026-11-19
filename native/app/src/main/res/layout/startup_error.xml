@@ -1,0 +1,6 @@
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+<LinearLayout android:orientation="vertical" android:padding="24dp" android:gravity="center" android:layout_width="match_parent" android:layout_height="wrap_content">
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/startup_error" android:textAppearance="?attr/textAppearanceBodyLarge"/>
+<com.google.android.material.button.MaterialButton android:id="@+id/retry" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/retry"/>
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>

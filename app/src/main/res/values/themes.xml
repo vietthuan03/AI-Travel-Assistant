@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.AiTravelAssistant.Base" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/travel_window_background</item>
+    </style>
+    <style name="Theme.AiTravelAssistant" parent="Theme.AiTravelAssistant.Base" />
+</resources>

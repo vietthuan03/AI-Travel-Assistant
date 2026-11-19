@@ -1,0 +1,18 @@
+<resources>
+    <plurals name="inclusive_days">
+        <item quantity="one">%1$d ngày, tính cả ngày đi và ngày về</item>
+        <item quantity="other">%1$d ngày, tính cả ngày đi và ngày về</item>
+    </plurals>
+    <plurals name="adults_count">
+        <item quantity="one">%1$d người lớn</item>
+        <item quantity="other">%1$d người lớn</item>
+    </plurals>
+    <plurals name="children_count">
+        <item quantity="one">%1$d trẻ em</item>
+        <item quantity="other">%1$d trẻ em</item>
+    </plurals>
+    <plurals name="travelers_count">
+        <item quantity="one">%1$d người</item>
+        <item quantity="other">%1$d người</item>
+    </plurals>
+</resources>

@@ -1,0 +1,17 @@
+<resources>
+    <color name="travel_primary">#075BAD</color>
+    <color name="travel_on_primary">#FFFFFF</color>
+    <color name="travel_background">#F2F7FD</color>
+    <color name="travel_surface">#FFFFFF</color>
+    <color name="travel_text">#142849</color>
+    <color name="travel_secondary_text">#3D5270</color>
+    <color name="travel_error">#A32C24</color>
+    <color name="travel_accent_soft">#E2F2FF</color>
+    <color name="travel_outline">#CCDBED</color>
+    <color name="travel_control_outline">#65809B</color>
+    <color name="travel_container_lowest">#FFFFFF</color>
+    <color name="travel_container_low">#F4F9FF</color>
+    <color name="travel_container">#EAF4FF</color>
+    <color name="travel_container_high">#DDEDFD</color>
+    <color name="travel_container_highest">#D2E5FA</color>
+</resources>

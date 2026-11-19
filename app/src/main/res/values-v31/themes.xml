@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AiTravelAssistant" parent="Theme.AiTravelAssistant.Base">
+        <item name="android:windowSplashScreenBackground">@color/travel_window_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/travel_launcher</item>
+    </style>
+</resources>

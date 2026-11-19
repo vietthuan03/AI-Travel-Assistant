@@ -1,0 +1,7 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@id/settings_graph" app:startDestination="@id/settings_fragment">
+<fragment android:id="@id/settings_fragment" android:name="com.example.travelassistant.feature.settings.SettingsFragment" android:label="@string/settings_title">
+<argument android:name="screenKey" app:argType="string" android:defaultValue="S01"/>
+<argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
+<argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
+</fragment>
+</navigation>

@@ -1,0 +1,85 @@
+<resources>
+    <string name="planner_brand">AI Travel Assistant</string>
+    <string name="planner_title">Lên kế hoạch du lịch</string>
+    <string name="planner_description">Điền các trường bắt buộc (*) để tạo lịch trình.</string>
+    <string name="trip_origin">Thành phố đi *</string>
+    <string name="origin_example">Chọn thành phố đi</string>
+    <string name="destination">Thành phố đến *</string>
+    <string name="destination_example">Chọn thành phố đến</string>
+    <string name="travel_date">Ngày đi *</string>
+    <string name="return_date">Ngày về *</string>
+    <string name="choose_date">Chọn ngày</string>
+    <string name="confirm_date">Xác nhận</string>
+    <string name="clear_date">Xóa ngày</string>
+    <string name="return_date_error">Ngày về phải từ ngày đi trở đi.</string>
+    <string name="trip_purpose">Mục đích chuyến đi *</string>
+    <string name="purpose_example">Chọn mục đích chuyến đi</string>
+    <string name="trip_route">%1$s → %2$s</string>
+    <string name="pace">Nhịp chuyến đi</string>
+    <string name="relaxed">Thư thả</string>
+    <string name="active">Năng động</string>
+    <string name="preferences">Ghi chú (tùy chọn)</string>
+    <string name="preferences_example">Ví dụ thích ẩm thực địa phương, tránh đi quá sớm</string>
+    <string name="generate">Tạo lịch trình</string>
+    <string name="loading_plan">Đang tạo lịch trình…</string>
+    <string name="failed_plan">Chưa tạo được lịch trình</string>
+    <string name="result_plan">Lịch trình gợi ý</string>
+    <string name="retry_hint">Nhấn Tạo lịch trình để thử lại.</string>
+    <string-array name="trip_city_suggestions">
+        <item>Hà Nội, Việt Nam</item>
+        <item>TP. Hồ Chí Minh, Việt Nam</item>
+        <item>Đà Nẵng, Việt Nam</item>
+        <item>Đà Lạt, Việt Nam</item>
+        <item>Nha Trang, Việt Nam</item>
+        <item>Bangkok, Thái Lan</item>
+        <item>Singapore</item>
+        <item>Tokyo, Nhật Bản</item>
+        <item>Seoul, Hàn Quốc</item>
+        <item>Ahmedabad (AMD), Ấn Độ</item>
+        <item>Goa (GOI), Ấn Độ</item>
+    </string-array>
+    <string-array name="trip_purpose_suggestions">
+        <item>Nghỉ dưỡng</item>
+        <item>Công tác</item>
+        <item>Thăm người thân hoặc bạn bè</item>
+        <item>Khám phá thiên nhiên</item>
+        <item>Văn hóa và ẩm thực</item>
+    </string-array>
+    <string name="trip_budget">Ngân sách chuyến đi *</string>
+    <string name="trip_budget_amount">Số tiền</string>
+    <string name="trip_budget_currency">Tiền tệ</string>
+    <string name="trip_budget_error">Nhập số nguyên lớn hơn 0.</string>
+    <string name="trip_budget_summary">Ngân sách %1$s %2$s</string>
+    <string name="trip_clear_selection">Bỏ chọn</string>
+    <string name="itinerary_day">Ngày %1$d</string>
+    <string name="itinerary_from">Từ %1$s</string>
+    <string name="itinerary_to">Đến %1$s</string>
+    <string name="itinerary_address">Địa chỉ gợi ý %1$s</string>
+    <string name="itinerary_open_map">Mở bản đồ</string>
+    <plurals name="trip_duration_days">
+        <item quantity="one">%d ngày</item>
+        <item quantity="other">%d ngày</item>
+    </plurals>
+    <string name="plan_error_network">Không kết nối được dịch vụ AI. Kiểm tra mạng rồi thử lại.</string>
+    <string name="plan_error_timeout">Dịch vụ AI phản hồi quá lâu. Vui lòng thử lại.</string>
+    <string name="plan_error_quota">Dịch vụ AI đã chạm giới hạn sử dụng hoặc đang quá tải. Vui lòng thử lại sau.</string>
+    <string name="plan_error_token_limit">AI đã chạm giới hạn độ dài khi tạo lịch trình. Thử giảm số ngày hoặc rút gọn ghi chú.</string>
+    <string name="plan_error_configuration">Ứng dụng chưa truy cập được dịch vụ AI với cấu hình hiện tại.</string>
+    <string name="plan_error_blocked">AI đã chặn yêu cầu hoặc phản hồi. Thử điều chỉnh ghi chú chuyến đi.</string>
+    <string name="plan_error_empty">AI trả về phản hồi trống. Vui lòng thử tạo lại.</string>
+    <string name="history_title">Lịch sử</string>
+    <string name="history_close">Đóng</string>
+    <string name="history_back">Quay lại</string>
+    <string name="history_empty">Chưa có lịch trình nào được lưu.</string>
+    <string name="history_save_failed">Lưu lịch trình thất bại. Bạn vẫn có thể xem bên dưới. Lịch trình này chưa được thêm vào lịch sử.</string>
+    <string name="history_read_failed">Không tải được lịch sử. Vui lòng mở lại lịch sử để thử lại.</string>
+    <string name="history_delete">Xóa lịch trình</string>
+    <string name="history_confirm">Xóa lịch trình này khỏi lịch sử?</string>
+    <string name="history_delete_failed">Xóa lịch trình thất bại. Vui lòng thử lại.</string>
+    <string name="previous_month">Tháng trước</string>
+    <string name="next_month">Tháng sau</string>
+    <string name="planner_open_menu">Mở menu lập kế hoạch</string>
+    <string name="planner_menu_trip_details">Thông tin chuyến đi</string>
+    <string name="planner_menu_latest_itinerary">Lịch trình vừa tạo</string>
+    <string name="planner_open_history">Mở lịch sử chuyến đi</string>
+</resources>

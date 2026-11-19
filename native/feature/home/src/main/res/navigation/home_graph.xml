@@ -1,0 +1,7 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@id/home_graph" app:startDestination="@id/home_fragment">
+<fragment android:id="@id/home_fragment" android:name="com.example.travelassistant.feature.home.HomeFragment" android:label="@string/brand_title">
+<argument android:name="screenKey" app:argType="string" android:defaultValue="H01"/>
+<argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
+<argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
+</fragment>
+</navigation>

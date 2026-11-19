@@ -1,0 +1,185 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/planner_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/planner_footer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="@dimen/content_max_width">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="@dimen/screen_inset">
+        <TextView android:id="@+id/preview_banner" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/preview_banner" android:textAppearance="?attr/textAppearanceBodyLarge" android:visibility="gone" android:accessibilityLiveRegion="polite" android:padding="12dp" android:background="@color/travel_accent_soft" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/section_gap"
+            android:background="@drawable/travel_step_panel"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:id="@+id/step_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="@color/travel_secondary_text" />
+
+            <TextView
+                android:id="@+id/step_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:accessibilityHeading="true"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="@color/travel_text" />
+
+            <TextView
+                android:id="@+id/step_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/travel_secondary_text" />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/step_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:importantForAccessibility="no"
+                android:max="3"
+                app:trackCornerRadius="3dp"
+                app:trackThickness="6dp" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/where_section" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:id="@+id/destination_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/destination_label" android:labelFor="@id/destination" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/destination_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <AutoCompleteTextView android:id="@+id/destination" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="textCapWords" android:completionThreshold="1" android:maxLength="120" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/selected_place" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="?attr/textAppearanceBodyMedium" android:layout_marginBottom="12dp" android:visibility="gone" />
+            <TextView android:id="@+id/catalog_note" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/local_catalog" android:textAppearance="?attr/textAppearanceBodyMedium" />
+            <LinearLayout
+                android:id="@+id/date_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/start_date_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/start_date_label" android:labelFor="@id/start_date" android:textAppearance="?attr/textAppearanceLabelLarge" />
+                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/start_date_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/start_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="date" android:focusable="false" android:clickable="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/end_date_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/end_date_label" android:labelFor="@id/end_date" android:textAppearance="?attr/textAppearanceLabelLarge" />
+                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/end_date_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/end_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="date" android:focusable="false" android:clickable="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <TextView android:id="@+id/date_helper" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/date_helper" android:textAppearance="?attr/textAppearanceBodyMedium" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/group_section" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:id="@+id/adults_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/adults_label" android:labelFor="@id/adults" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/adults_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/adults" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="number" android:maxLength="2" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/children_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/children_label" android:labelFor="@id/children" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/children_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/children" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="number" android:maxLength="2" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/group_helper" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/group_helper" android:textAppearance="?attr/textAppearanceBodyMedium" />
+            <LinearLayout android:id="@+id/child_ages" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+            <TextView android:id="@+id/budget_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/budget_label" android:labelFor="@id/budget" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/budget_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/budget" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="numberDecimal" android:maxLength="30" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/budget_helper" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/budget_helper" android:textAppearance="?attr/textAppearanceBodyMedium" />
+            <TextView android:id="@+id/currency_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/currency_label" android:labelFor="@id/currency" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/currency_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <AutoCompleteTextView android:id="@+id/currency" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/transport_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/transport_label" android:labelFor="@id/transport" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/transport_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <AutoCompleteTextView android:id="@+id/transport" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/origin_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/origin_label" android:labelFor="@id/origin" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/origin_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <AutoCompleteTextView android:id="@+id/origin" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="textCapWords" android:completionThreshold="1" android:maxLength="120" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/preferences_section" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:id="@+id/purpose_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/purpose_label" android:labelFor="@id/purpose" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/purpose_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <AutoCompleteTextView android:id="@+id/purpose" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/pace_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/pace_label" android:labelFor="@id/pace" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/pace_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <AutoCompleteTextView android:id="@+id/pace" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/interests_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/interests_label" android:textAppearance="?attr/textAppearanceTitleMedium" />
+            <com.google.android.material.chip.ChipGroup android:id="@+id/interests" android:layout_width="match_parent" android:layout_height="wrap_content" app:singleLine="false">
+                <com.google.android.material.chip.Chip android:id="@+id/interest_food" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/interest_food" android:checkable="true" />
+                <com.google.android.material.chip.Chip android:id="@+id/interest_culture" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/interest_culture" android:checkable="true" />
+                <com.google.android.material.chip.Chip android:id="@+id/interest_nature" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/interest_nature" android:checkable="true" />
+                <com.google.android.material.chip.Chip android:id="@+id/interest_relax" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/interest_relax" android:checkable="true" />
+            </com.google.android.material.chip.ChipGroup>
+            <TextView android:id="@+id/arrival_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/arrival_label" android:labelFor="@id/arrival" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/arrival_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/arrival" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/departure_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/departure_label" android:labelFor="@id/departure" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/departure_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/departure" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/time_helper" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/local_times_helper" android:textAppearance="?attr/textAppearanceBodyMedium" />
+            <TextView android:id="@+id/notes_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:text="@string/notes_label" android:labelFor="@id/notes" android:textAppearance="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/notes_layout" style="@style/Widget.Material3.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:counterEnabled="true" app:counterMaxLength="1000" app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/notes" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:inputType="textMultiLine|textCapSentences" android:minLines="3" android:gravity="top" android:maxLength="1000" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:id="@+id/notes_helper" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/notes_helper" android:textAppearance="?attr/textAppearanceBodyMedium" />
+            <TextView android:id="@+id/review_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/brief_review" android:textAppearance="?attr/textAppearanceTitleLarge" android:accessibilityHeading="true" />
+            <TextView android:id="@+id/review_summary" android:background="@drawable/travel_step_panel" android:padding="16dp" android:lineSpacingExtra="3dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/not_selected" android:textAppearance="?attr/textAppearanceBodyLarge" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/edit_where" style="?attr/materialButtonOutlinedStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:minHeight="48dp" android:text="@string/edit_where" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/edit_group" style="?attr/materialButtonOutlinedStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:minHeight="48dp" android:text="@string/edit_group" />
+            <TextView android:id="@+id/ai_notice" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/ai_notice" android:textAppearance="?attr/textAppearanceBodyMedium" />
+        </LinearLayout>
+        <TextView android:id="@+id/draft_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/draft_loading" android:textAppearance="?attr/textAppearanceBodyMedium" android:accessibilityLiveRegion="polite" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/draft_retry" style="?attr/materialButtonOutlinedStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:minHeight="48dp" android:text="@string/retry" android:visibility="gone" />
+        <TextView android:id="@+id/availability" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" android:text="@string/backend_unavailable" android:textAppearance="?attr/textAppearanceBodyMedium" android:accessibilityLiveRegion="polite" android:visibility="gone" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/language_settings" style="?attr/materialButtonOutlinedStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:minHeight="48dp" android:text="@string/language_settings" />
+    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/planner_footer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/travel_background"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/screen_inset"
+        android:paddingVertical="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="@dimen/content_max_width">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/continue_plan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="54dp"
+            android:text="@string/action_continue" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

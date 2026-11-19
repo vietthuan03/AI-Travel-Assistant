@@ -1,0 +1,5 @@
+<resources><style name="Theme.TravelAssistant.Starting" parent="Theme.SplashScreen">
+<item name="windowSplashScreenBackground">?android:colorBackground</item>
+<item name="windowSplashScreenAnimatedIcon">@mipmap/travel_launcher</item>
+<item name="postSplashScreenTheme">@style/Theme.TravelAssistant</item>
+</style></resources>

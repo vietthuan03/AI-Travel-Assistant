@@ -1,0 +1,1 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"><application android:label="${debugAppLabel}" android:networkSecurityConfig="@xml/network_security_config_debug" tools:replace="android:networkSecurityConfig,android:label"/></manifest>
