@@ -1,6 +1,6 @@
 # AiTravelAssistant · Android
 
-Mở thư mục gốc `AiTravelAssistant/` trong Android Studio và chọn cấu hình `app` để phát triển ứng dụng Jetpack Compose. `native/` là một dự án Kotlin/XML có Gradle wrapper, application ID và luồng lưu chuyến đi riêng. Android Studio liên kết cả hai Gradle project khi mở thư mục gốc. Để build ứng dụng XML từ gốc, chạy `./native/gradlew -p native :app:assembleDebug`.
+Mở thư mục gốc `AiTravelAssistant/` trong Android Studio và chọn cấu hình `app` để phát triển ứng dụng Jetpack Compose.
 
 ## Chạy ứng dụng và test
 
