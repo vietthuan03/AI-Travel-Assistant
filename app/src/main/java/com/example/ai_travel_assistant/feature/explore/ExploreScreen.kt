@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
+import com.example.ai_travel_assistant.domain.trip.TripRequest
 import com.example.ai_travel_assistant.domain.trip.formatUtc
 import java.text.DateFormat
 import androidx.compose.foundation.layout.*
@@ -44,15 +45,24 @@ private const val BookingComMaxAdults = 30
 private const val BookingComMaxChildren = 10
 private const val BookingComMaxRooms = 30
 
-private enum class BookingType(val label: Int) {
+internal enum class BookingType(val label: Int) {
     Flight(R.string.explore_flights), Stay(R.string.explore_stays)
 }
 
+internal data class ItineraryBooking(val type: BookingType, val trip: TripRequest)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ExploreScreen(cities: List<String>, today: Long, canPlan: Boolean, onPlan: (String) -> Unit) {
+internal fun ExploreScreen(
+    cities: List<String>,
+    today: Long,
+    canPlan: Boolean,
+    itineraryBooking: ItineraryBooking?,
+    onItineraryBookingClosed: () -> Unit,
+    onPlan: (String) -> Unit,
+) {
     var cityIndex by rememberSaveable { mutableIntStateOf(-1) }
-    val city = cities.getOrNull(cityIndex).orEmpty()
+    val city = itineraryBooking?.trip?.destination ?: cities.getOrNull(cityIndex).orEmpty()
     var booking by rememberSaveable { mutableStateOf<BookingType?>(null) }
     val forms = rememberSaveableStateHolder()
     ExploreDestination(cities, city) { cityIndex = cities.indexOf(it) }
@@ -74,38 +84,53 @@ internal fun ExploreScreen(cities: List<String>, today: Long, canPlan: Boolean, 
             }
         }
     }
-    booking?.let { type ->
-        ModalBottomSheet(onDismissRequest = { booking = null },
+    val activeBooking = itineraryBooking?.type ?: booking
+    if (activeBooking != null) {
+        val closeBooking = {
+            booking = null
+            if (itineraryBooking != null) {
+                val tripDestinationIndex = cities.indexOf(city)
+                if (tripDestinationIndex >= 0) cityIndex = tripDestinationIndex
+                onItineraryBookingClosed()
+            }
+        }
+        ModalBottomSheet(onDismissRequest = closeBooking,
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).imePadding().padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(type.label), Modifier.weight(1f).semantics { heading() },
+                    Text(stringResource(activeBooking.label), Modifier.weight(1f).semantics { heading() },
                         style = MaterialTheme.typography.headlineSmall)
-                    TextButton(onClick = { booking = null }) { Text(stringResource(R.string.history_close)) }
+                    TextButton(onClick = closeBooking) { Text(stringResource(R.string.history_close)) }
                 }
-                forms.SaveableStateProvider("${type.name}/$cityIndex") { BookingForm(type, city, today) }
+                if (itineraryBooking != null) {
+                    BookingForm(activeBooking, city, today, itineraryBooking.trip)
+                } else {
+                    forms.SaveableStateProvider("${activeBooking.name}/$cityIndex") {
+                        BookingForm(activeBooking, city, today)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun BookingForm(type: BookingType, city: String, today: Long) {
+private fun BookingForm(type: BookingType, city: String, today: Long, trip: TripRequest? = null) {
     val context = LocalContext.current
     val flight = type == BookingType.Flight
-    var from by rememberSaveable { mutableStateOf("") }
     val resources = LocalResources.current
-    var to by key(city) {
-        rememberSaveable {
-            mutableStateOf(airportCities.entries.firstOrNull { resources.getString(it.value) == city }?.key.orEmpty())
-        }
-    }
-    var roundTrip by rememberSaveable { mutableStateOf(false) }
-    var chosenStart by rememberSaveable { mutableLongStateOf(today) }
+    val arrivalAirport = airportCities.entries.firstOrNull { resources.getString(it.value) == city }?.key.orEmpty()
+    val departureAirport = airportCities.entries.firstOrNull {
+        resources.getString(it.value) == trip?.origin
+    }?.key.orEmpty().takeUnless { it == arrivalAirport }.orEmpty()
+    var from by rememberSaveable { mutableStateOf(departureAirport) }
+    var to by key(city) { rememberSaveable { mutableStateOf(arrivalAirport) } }
+    var roundTrip by rememberSaveable { mutableStateOf(flight && trip?.returnDate != null) }
+    var chosenStart by rememberSaveable { mutableLongStateOf(trip?.departure ?: today) }
     val start = maxOf(today, chosenStart)
     val earliestEnd = if (flight) start else start + 86_400_000L
-    var chosenEnd by rememberSaveable { mutableLongStateOf(earliestEnd) }
+    var chosenEnd by rememberSaveable { mutableLongStateOf(trip?.returnDate ?: earliestEnd) }
     val end = maxOf(earliestEnd, chosenEnd)
     var adultInput by rememberSaveable { mutableStateOf("1") }
     var roomInput by rememberSaveable { mutableStateOf("1") }

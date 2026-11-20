@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.ai_travel_assistant.R
 import com.example.ai_travel_assistant.domain.trip.Itinerary
 import com.example.ai_travel_assistant.domain.trip.PlanFailure
+import com.example.ai_travel_assistant.feature.explore.BookingType
 import com.example.ai_travel_assistant.ui.itinerary.ItineraryCard
 import com.example.ai_travel_assistant.ui.itinerary.PlanStatusHeader
 
@@ -38,6 +40,7 @@ internal fun PlannerResult(
     details: String,
     destination: String,
     itineraryRequester: BringIntoViewRequester,
+    onBook: (BookingType) -> Unit,
 ) {
     if (state == PlannerUiState.Initial) return
 
@@ -51,14 +54,18 @@ internal fun PlannerResult(
         },
         label = "Itinerary status",
     ) { result ->
-        PlanResultContent(result, itineraryRequester)
+        PlanResultContent(result, itineraryRequester, onBook)
     }
 }
 
 private data class ResultPresentation(val state: PlannerUiState, val route: String, val details: String, val destination: String)
 
 @Composable
-private fun PlanResultContent(result: ResultPresentation, itineraryRequester: BringIntoViewRequester) {
+private fun PlanResultContent(
+    result: ResultPresentation,
+    itineraryRequester: BringIntoViewRequester,
+    onBook: (BookingType) -> Unit,
+) {
     val state = result.state
     val resultHeading = remember { BringIntoViewRequester() }
     val heading = if (state is PlannerUiState.Success) itineraryRequester else resultHeading
@@ -118,6 +125,11 @@ private fun PlanResultContent(result: ResultPresentation, itineraryRequester: Br
             }
             ItineraryCard(state.itinerary, result.route, if (state.saveFailed) Modifier else status,
                 result.details, result.destination)
+            BookingType.entries.forEach { type ->
+                OutlinedButton(onClick = { onBook(type) }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(type.label))
+                }
+            }
         }
     }
 }

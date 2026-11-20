@@ -139,4 +139,12 @@
         <item quantity="one">%d trẻ dưới 2 tuổi</item>
         <item quantity="other">%d trẻ dưới 2 tuổi</item>
     </plurals>
+    <string name="openai_settings_title">Cài đặt OpenAI</string>
+    <string name="openai_active">Đang dùng OpenAI</string>
+    <string name="openai_inactive">Đang dùng Gemini</string>
+    <string name="openai_session_hint">Ứng dụng giữ key trong bộ nhớ của phiên này. Phí sử dụng API được tính vào dự án OpenAI của bạn.</string>
+    <string name="openai_key_label">API key OpenAI</string>
+    <string name="openai_invalid_format">Nhập API key bắt đầu bằng sk-.</string>
+    <string name="openai_use">Dùng OpenAI</string>
+    <string name="openai_use_gemini">Chuyển về Gemini</string>
 </resources>

@@ -68,6 +68,7 @@ internal fun PlannerScaffold(
     tab: HomeTab,
     selectTab: (HomeTab) -> Unit,
     onExit: () -> Unit,
+    openAiSettings: (() -> Unit)?,
     historyEnabled: Boolean,
     openHistory: () -> Unit,
     showTripDetails: () -> Unit,
@@ -129,6 +130,9 @@ internal fun PlannerScaffold(
                 onLatestItineraryClick = showLatestItinerary?.let { navigate -> { navigateFromMenu(navigate) } },
                 onHistoryClick = { navigateFromMenu(openHistory) },
                 historyEnabled = historyEnabled,
+                onOpenAiSettingsClick = openAiSettings?.let { openSettings ->
+                    { navigateFromMenu(openSettings) }
+                },
             )
         },
     ) {

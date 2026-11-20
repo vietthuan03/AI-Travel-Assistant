@@ -21,7 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import com.example.ai_travel_assistant.feature.explore.BookingType
 import com.example.ai_travel_assistant.feature.explore.ExploreScreen
+import com.example.ai_travel_assistant.feature.explore.ItineraryBooking
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ internal fun PlannerForm(
     state: PlannerUiState,
     generate: (TripRequest, String) -> Unit,
     onExit: () -> Unit,
+    openAiSettings: (() -> Unit)? = null,
     openHistory: () -> Unit,
 ) {
     var origin by rememberSaveable { mutableStateOf("") }
@@ -97,6 +100,7 @@ internal fun PlannerForm(
     val focusManager = LocalFocusManager.current
     var tab by rememberSaveable { mutableStateOf(HomeTab.Planner) }
     val tabState = rememberSaveableStateHolder()
+    var requestedBooking by rememberSaveable { mutableStateOf<BookingType?>(null) }
     var scrollTarget by remember { mutableStateOf<BringIntoViewRequester?>(null) }
     val tripDetailsRequester = remember { BringIntoViewRequester() }
     val itineraryRequester = remember { BringIntoViewRequester() }
@@ -112,6 +116,7 @@ internal fun PlannerForm(
         tab = tab,
         selectTab = { tab = it },
         onExit = onExit,
+        openAiSettings = openAiSettings,
         historyEnabled = !loading,
         openHistory = openHistory,
         showTripDetails = {
@@ -129,7 +134,16 @@ internal fun PlannerForm(
     ) {
         if (tab == HomeTab.Explore) {
             tabState.SaveableStateProvider(HomeTab.Explore) {
-                ExploreScreen(cities, today, canPlan = !loading) { selected ->
+                val itineraryBooking = if (state is PlannerUiState.Success) {
+                    requestedBooking?.let { ItineraryBooking(it, state.request) }
+                } else null
+                ExploreScreen(
+                    cities = cities,
+                    today = today,
+                    canPlan = !loading,
+                    itineraryBooking = itineraryBooking,
+                    onItineraryBookingClosed = { requestedBooking = null },
+                ) { selected ->
                     destination = selected
                     tab = HomeTab.Planner
                     scrollTarget = tripDetailsRequester
@@ -226,7 +240,13 @@ internal fun PlannerForm(
             )
         }
 
-        PlannerResult(state, submittedRoute, submittedDetails, submittedDestination, itineraryRequester)
+        PlannerResult(state, submittedRoute, submittedDetails, submittedDestination, itineraryRequester) { type ->
+            if (state is PlannerUiState.Success) {
+                focusManager.clearFocus()
+                requestedBooking = type
+                tab = HomeTab.Explore
+            }
+        }
     }
 }
 

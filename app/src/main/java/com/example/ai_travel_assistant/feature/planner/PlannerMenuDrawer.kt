@@ -10,22 +10,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.SecureFlagPolicy
 import com.example.ai_travel_assistant.R
 
 private const val DrawerWidthFraction = 0.8f
@@ -42,6 +54,7 @@ internal fun PlannerMenuDrawer(
     onLatestItineraryClick: (() -> Unit)?,
     onHistoryClick: () -> Unit,
     historyEnabled: Boolean,
+    onOpenAiSettingsClick: (() -> Unit)?,
 ) {
     val windowWidth = LocalConfiguration.current.screenWidthDp.dp
     val drawerWidth = minOf(windowWidth * DrawerWidthFraction, DrawerMaxWidth)
@@ -93,6 +106,13 @@ internal fun PlannerMenuDrawer(
                         onClick = onLatestItineraryClick,
                     )
                 }
+                if (onOpenAiSettingsClick != null) {
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.openai_settings_title)) },
+                        selected = false,
+                        onClick = onOpenAiSettingsClick,
+                    )
+                }
                 if (historyEnabled) {
                     NavigationDrawerItem(
                         icon = { DrawerIcon(R.drawable.ic_trip_history) },
@@ -109,4 +129,51 @@ internal fun PlannerMenuDrawer(
 @Composable
 private fun DrawerIcon(@DrawableRes icon: Int) {
     Icon(painter = painterResource(icon), contentDescription = null)
+}
+
+@Composable
+internal fun OpenAiSettingsDialog(
+    enabled: Boolean,
+    onDismiss: () -> Unit,
+    onSave: (String?) -> Unit,
+) {
+    var apiKey by remember { mutableStateOf("") }
+    val trimmedKey = apiKey.trim()
+    val validKey = trimmedKey.startsWith("sk-") && trimmedKey.length > 3 &&
+        trimmedKey.all { it in '!'..'~' }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(securePolicy = SecureFlagPolicy.SecureOn),
+        title = { Text(stringResource(R.string.openai_settings_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(if (enabled) R.string.openai_active else R.string.openai_inactive))
+                Text(stringResource(R.string.openai_session_hint))
+                OutlinedTextField(
+                    value = apiKey,
+                    onValueChange = { apiKey = it },
+                    label = { Text(stringResource(R.string.openai_key_label)) },
+                    isError = trimmedKey.isNotEmpty() && !validKey,
+                    supportingText = if (trimmedKey.isNotEmpty() && !validKey) {
+                        { Text(stringResource(R.string.openai_invalid_format)) }
+                    } else null,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(trimmedKey) }, enabled = validKey) {
+                Text(stringResource(R.string.openai_use))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = if (enabled) ({ onSave(null) }) else onDismiss) {
+                Text(stringResource(if (enabled) R.string.openai_use_gemini else R.string.history_close))
+            }
+        },
+    )
 }

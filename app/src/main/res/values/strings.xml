@@ -154,4 +154,12 @@
         <item quantity="one">%d infant</item>
         <item quantity="other">%d infants</item>
     </plurals>
+    <string name="openai_settings_title">OpenAI settings</string>
+    <string name="openai_active">Current provider: OpenAI</string>
+    <string name="openai_inactive">Current provider: Gemini</string>
+    <string name="openai_session_hint">The app keeps your key in memory for this session. OpenAI API usage is billed to your OpenAI project.</string>
+    <string name="openai_key_label">OpenAI API key</string>
+    <string name="openai_invalid_format">Enter an API key that starts with sk-.</string>
+    <string name="openai_use">Use OpenAI</string>
+    <string name="openai_use_gemini">Switch to Gemini</string>
 </resources>

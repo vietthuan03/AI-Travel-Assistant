@@ -11,6 +11,7 @@ import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.APINotConfiguredException
 import com.google.firebase.ai.type.ContentBlockedException
 import com.google.firebase.ai.type.FinishReason
+import com.google.firebase.ai.type.GenerativeBackend
 import com.google.firebase.ai.type.InvalidAPIKeyException
 import com.google.firebase.ai.type.PermissionMissingException
 import com.google.firebase.ai.type.PromptBlockedException
@@ -30,7 +31,11 @@ internal class FirebaseTripGenerator : TripGenerator {
     override suspend fun generate(request: TripRequest, language: String): Itinerary {
         val prompt = request.prompt(language)
         val text = fallback.generate { model ->
-            Firebase.ai.generativeModel(modelName = model).generateContent(prompt).text
+            val text = Firebase.ai(backend = GenerativeBackend.googleAI())
+                .generativeModel(modelName = model)
+                .generateContent(prompt).text
+            if (!text.isNullOrBlank()) Log.i("TravelAI", "model=$model result=success")
+            text
         }
         return readItinerary(text)
     }
@@ -52,8 +57,13 @@ internal fun Throwable.toPlanFailure(): PlanFailure {
                 is QuotaExceededException -> PlanFailure.Quota
                 is RequestTimeoutException, is SocketTimeoutException -> PlanFailure.Timeout
                 is UnknownHostException, is ConnectException -> PlanFailure.Network
+                is PermissionMissingException -> if (cause.message.orEmpty().lowercase().isModelUnavailable()) {
+                    PlanFailure.ModelUnavailable
+                } else {
+                    PlanFailure.Configuration
+                }
                 is APINotConfiguredException, is InvalidAPIKeyException, is ServiceDisabledException,
-                is PermissionMissingException, is UnsupportedUserLocationException -> PlanFailure.Configuration
+                is UnsupportedUserLocationException -> PlanFailure.Configuration
                 is PromptBlockedException, is ContentBlockedException -> PlanFailure.Blocked
                 is ResponseStoppedException -> when (cause.response.candidates.firstOrNull()?.finishReason) {
                     FinishReason.MAX_TOKENS -> PlanFailure.TokenLimit
@@ -63,12 +73,10 @@ internal fun Throwable.toPlanFailure(): PlanFailure {
                 is ServerException -> {
                     val message = cause.message.orEmpty().lowercase()
                     when {
-                        "resource exhausted" in message || "rate limit" in message -> PlanFailure.Quota
+                        "resource exhausted" in message || "resource_exhausted" in message ||
+                            "rate limit" in message -> PlanFailure.Quota
                         "app check" in message -> PlanFailure.Configuration
-                        "model" in message && (
-                            "not found" in message || "not supported for generatecontent" in message ||
-                                "does not have access to" in message || "do not have access to" in message
-                        ) -> PlanFailure.ModelUnavailable
+                        message.isModelUnavailable() -> PlanFailure.ModelUnavailable
                         else -> null
                     }
                 }
@@ -76,3 +84,9 @@ internal fun Throwable.toPlanFailure(): PlanFailure {
             }
         } ?: PlanFailure.Unknown
 }
+
+private fun String.isModelUnavailable(): Boolean =
+    "model" in this && (
+        "not found" in this || "not supported for generatecontent" in this ||
+            "does not have access to" in this || "do not have access to" in this
+        )

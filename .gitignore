@@ -14,3 +14,12 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Explore Desk local dependencies, build output, and runtime state
+/sites/explore-desk/node_modules/
+/sites/explore-desk/.next/
+/sites/explore-desk/.sites-runtime/
+/sites/explore-desk/.wrangler/
+/sites/explore-desk/dist/
+/sites/explore-desk/next-env.d.ts
+/sites/explore-desk/tsconfig.tsbuildinfo
