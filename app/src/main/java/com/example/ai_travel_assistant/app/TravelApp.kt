@@ -22,11 +22,11 @@ internal class AppContainer(context: Context) {
 }
 
 @Composable
-internal fun TravelApp(container: AppContainer) {
+internal fun TravelApp(container: AppContainer, onExit: () -> Unit) {
     val planner = viewModel { container.createPlanner() }
     val state by planner.uiState.collectAsState()
     var showHistory by rememberSaveable { mutableStateOf(false) }
-    PlannerForm(state, planner::planTrip) { showHistory = true }
+    PlannerForm(state, planner::planTrip, onExit) { showHistory = true }
     if (showHistory) {
         val history = viewModel { HistoryViewModel(container.repository, createSavedStateHandle()) }
         TripHistoryDialog(history) { showHistory = false }

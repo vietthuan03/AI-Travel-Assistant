@@ -46,7 +46,12 @@ import com.example.ai_travel_assistant.ui.theme.AiTravelAssistantTheme
 private val GenerateButtonMinHeight = 56.dp
 
 @Composable
-internal fun PlannerForm(state: PlannerUiState, generate: (TripRequest, String) -> Unit, openHistory: () -> Unit) {
+internal fun PlannerForm(
+    state: PlannerUiState,
+    generate: (TripRequest, String) -> Unit,
+    onExit: () -> Unit,
+    openHistory: () -> Unit,
+) {
     var origin by rememberSaveable { mutableStateOf("") }
     var destination by rememberSaveable { mutableStateOf("") }
     val today = rememberTodayForPicker()
@@ -106,6 +111,7 @@ internal fun PlannerForm(state: PlannerUiState, generate: (TripRequest, String) 
     PlannerScaffold(
         tab = tab,
         selectTab = { tab = it },
+        onExit = onExit,
         historyEnabled = !loading,
         openHistory = openHistory,
         showTripDetails = {
@@ -296,5 +302,5 @@ private fun TripNotes(
 )
 @Composable
 private fun TravelPreview() {
-    AiTravelAssistantTheme { PlannerForm(PlannerUiState.Initial, { _, _ -> }) {} }
+    AiTravelAssistantTheme { PlannerForm(PlannerUiState.Initial, { _, _ -> }, {}) {} }
 }

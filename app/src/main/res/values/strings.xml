@@ -117,4 +117,41 @@
     <string name="explore_open_failed">No app could open this link.</string>
     <string name="explore_airport_hint">Choose an airport</string>
     <string name="explore_airport_option">%1$s · %2$s</string>
+    <string name="explore_choose_city">Where would you like to go?</string>
+    <string name="explore_change_city">Change destination</string>
+    <string name="explore_route">Route</string>
+    <string name="explore_guests">Guests</string>
+    <string name="explore_summary">%1$s · %2$s</string>
+    <plurals name="explore_adult_count">
+        <item quantity="one">%d adult</item>
+        <item quantity="other">%d adults</item>
+    </plurals>
+    <plurals name="explore_room_count">
+        <item quantity="one">%d room</item>
+        <item quantity="other">%d rooms</item>
+    </plurals>
+    <string name="app_exit_title">Exit the app?</string>
+    <string name="app_exit_confirm">Exit</string>
+    <string name="app_exit_stay">Stay</string>
+    <string name="explore_children">Children</string>
+    <string name="explore_decrease_count">Decrease %1$s</string>
+    <string name="explore_increase_count">Increase %1$s</string>
+    <string name="explore_child_age">Age of child %1$d</string>
+    <string name="explore_choose_age">Select age</string>
+    <string name="explore_choose_flight_ages">Select each child’s age (2–17).</string>
+    <string name="explore_choose_stay_ages">Select each child’s age (0–17).</string>
+    <string name="explore_count_separator">" · "</string>
+    <plurals name="explore_child_count">
+        <item quantity="one">%d child</item>
+        <item quantity="other">%d children</item>
+    </plurals>
+    <string name="explore_infants">Infants (under 2, on lap)</string>
+    <string name="explore_skyscanner_limit">Skyscanner allows up to %1$d adults and %2$d children, including infants.</string>
+    <string name="explore_infant_limit">The number of infants cannot exceed the number of adults.</string>
+    <string name="explore_booking_com_limit">Booking.com search limits: %1$d adults, %2$d children, %3$d rooms.</string>
+    <string name="explore_room_limit">The number of rooms cannot exceed the number of adults.</string>
+    <plurals name="explore_infant_count">
+        <item quantity="one">%d infant</item>
+        <item quantity="other">%d infants</item>
+    </plurals>
 </resources>

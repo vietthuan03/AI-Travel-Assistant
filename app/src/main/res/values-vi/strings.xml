@@ -102,4 +102,41 @@
     <string name="explore_open_failed">Không có ứng dụng mở được liên kết này.</string>
     <string name="explore_airport_hint">Chọn sân bay</string>
     <string name="explore_airport_option">%1$s · %2$s</string>
+    <string name="explore_choose_city">Bạn muốn đi đâu?</string>
+    <string name="explore_change_city">Đổi điểm đến</string>
+    <string name="explore_route">Tuyến bay</string>
+    <string name="explore_guests">Khách</string>
+    <string name="explore_summary">%1$s · %2$s</string>
+    <plurals name="explore_adult_count">
+        <item quantity="one">%d người lớn</item>
+        <item quantity="other">%d người lớn</item>
+    </plurals>
+    <plurals name="explore_room_count">
+        <item quantity="one">%d phòng</item>
+        <item quantity="other">%d phòng</item>
+    </plurals>
+    <string name="app_exit_title">Thoát ứng dụng?</string>
+    <string name="app_exit_confirm">Thoát</string>
+    <string name="app_exit_stay">Ở lại</string>
+    <string name="explore_children">Trẻ em</string>
+    <string name="explore_decrease_count">Giảm %1$s</string>
+    <string name="explore_increase_count">Tăng %1$s</string>
+    <string name="explore_child_age">Tuổi của trẻ thứ %1$d</string>
+    <string name="explore_choose_age">Chọn tuổi</string>
+    <string name="explore_choose_flight_ages">Chọn tuổi từng trẻ (2–17 tuổi).</string>
+    <string name="explore_choose_stay_ages">Chọn tuổi từng trẻ (0–17 tuổi).</string>
+    <string name="explore_count_separator">" · "</string>
+    <plurals name="explore_child_count">
+        <item quantity="one">%d trẻ em</item>
+        <item quantity="other">%d trẻ em</item>
+    </plurals>
+    <string name="explore_infants">Trẻ dưới 2 tuổi (ngồi cùng người lớn)</string>
+    <string name="explore_skyscanner_limit">Skyscanner cho phép tối đa %1$d người lớn và %2$d trẻ em, kể cả trẻ dưới 2 tuổi.</string>
+    <string name="explore_infant_limit">Số trẻ dưới 2 tuổi không được vượt quá số người lớn.</string>
+    <string name="explore_booking_com_limit">Giới hạn tìm trên Booking.com là %1$d người lớn, %2$d trẻ em và %3$d phòng.</string>
+    <string name="explore_room_limit">Số phòng không được vượt quá số người lớn.</string>
+    <plurals name="explore_infant_count">
+        <item quantity="one">%d trẻ dưới 2 tuổi</item>
+        <item quantity="other">%d trẻ dưới 2 tuổi</item>
+    </plurals>
 </resources>

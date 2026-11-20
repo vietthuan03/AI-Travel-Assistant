@@ -36,6 +36,8 @@ private val DrawerItemSpacing = 4.dp
 @Composable
 internal fun PlannerMenuDrawer(
     drawerState: DrawerState,
+    currentTab: HomeTab,
+    onExploreClick: () -> Unit,
     onTripDetailsClick: () -> Unit,
     onLatestItineraryClick: (() -> Unit)?,
     onHistoryClick: () -> Unit,
@@ -74,8 +76,14 @@ internal fun PlannerMenuDrawer(
                 NavigationDrawerItem(
                     icon = { DrawerIcon(R.drawable.ic_trip_calendar) },
                     label = { Text(stringResource(R.string.planner_menu_trip_details)) },
-                    selected = true,
+                    selected = currentTab == HomeTab.Planner,
                     onClick = onTripDetailsClick,
+                )
+                NavigationDrawerItem(
+                    icon = { DrawerIcon(R.drawable.ic_explore) },
+                    label = { Text(stringResource(R.string.tab_explore)) },
+                    selected = currentTab == HomeTab.Explore,
+                    onClick = onExploreClick,
                 )
                 if (onLatestItineraryClick != null) {
                     NavigationDrawerItem(

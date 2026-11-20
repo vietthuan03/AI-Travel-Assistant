@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    TravelApp(container)
+                    TravelApp(container, onExit = { moveTaskToBack(true) })
                 }
             }
         }

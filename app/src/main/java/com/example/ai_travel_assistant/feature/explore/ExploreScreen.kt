@@ -3,9 +3,15 @@ package com.example.ai_travel_assistant.feature.explore
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.core.net.toUri
-import android.widget.Toast
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import com.example.ai_travel_assistant.domain.trip.formatUtc
+import java.text.DateFormat
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,10 +19,11 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.ai_travel_assistant.R
 import com.example.ai_travel_assistant.feature.planner.DepartureDateDialog
@@ -30,42 +37,56 @@ private val airportCities = mapOf(
     "AMD" to R.string.city_ahmedabad, "GOI" to R.string.city_goa,
 )
 
+private const val UnselectedChildAge = -1
+private const val SkyscannerMaxAdults = 8
+private const val SkyscannerMaxMinors = 8
+private const val BookingComMaxAdults = 30
+private const val BookingComMaxChildren = 10
+private const val BookingComMaxRooms = 30
+
 private enum class BookingType(val label: Int) {
     Flight(R.string.explore_flights), Stay(R.string.explore_stays)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ExploreScreen(cities: List<String>, today: Long, canPlan: Boolean, onPlan: (String) -> Unit) {
     var cityIndex by rememberSaveable { mutableIntStateOf(-1) }
     val city = cities.getOrNull(cityIndex).orEmpty()
     var booking by rememberSaveable { mutableStateOf<BookingType?>(null) }
     val forms = rememberSaveableStateHolder()
-    Text(stringResource(R.string.tab_explore), style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier.semantics { heading() })
-    SuggestedTripField(city, { cityIndex = cities.indexOf(it) }, stringResource(R.string.explore_destination),
-        stringResource(R.string.destination_example), cities, enabled = true)
-    if (city.isEmpty()) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            cities.take(3).forEachIndexed { index, suggestion ->
-                SuggestionChip(onClick = { cityIndex = index }, label = { Text(suggestion) })
-            }
-        }
-        return
-    }
+    ExploreDestination(cities, city) { cityIndex = cities.indexOf(it) }
+    if (city.isEmpty()) return
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedButton(onClick = { onPlan(city) }, enabled = canPlan, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.explore_plan))
-        }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BookingType.entries.forEach { type ->
-                FilterChip(selected = booking == type, onClick = { booking = type },
-                    label = { Text(stringResource(type.label)) })
+    Button(onClick = { onPlan(city) }, enabled = canPlan, modifier = Modifier.fillMaxWidth()) {
+        Icon(painterResource(R.drawable.ic_trip_calendar), null)
+        Spacer(Modifier.width(8.dp))
+        Text(stringResource(R.string.explore_plan))
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        BookingType.entries.forEach { type ->
+            OutlinedCard(onClick = { booking = type }, modifier = Modifier.weight(1f)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(painterResource(if (type == BookingType.Flight) R.drawable.ic_explore_flight
+                        else R.drawable.ic_explore_stay), null, tint = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(type.label), style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }
     booking?.let { type ->
-        forms.SaveableStateProvider(type) { BookingForm(type, city, today) }
+        ModalBottomSheet(onDismissRequest = { booking = null },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).imePadding().padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(type.label), Modifier.weight(1f).semantics { heading() },
+                        style = MaterialTheme.typography.headlineSmall)
+                    TextButton(onClick = { booking = null }) { Text(stringResource(R.string.history_close)) }
+                }
+                forms.SaveableStateProvider("${type.name}/$cityIndex") { BookingForm(type, city, today) }
+            }
+        }
     }
 }
 
@@ -88,44 +109,141 @@ private fun BookingForm(type: BookingType, city: String, today: Long) {
     val end = maxOf(earliestEnd, chosenEnd)
     var adultInput by rememberSaveable { mutableStateOf("1") }
     var roomInput by rememberSaveable { mutableStateOf("1") }
-    val adults = adultInput.toIntOrNull() ?: 0
-    val rooms = roomInput.toIntOrNull() ?: 0
+    var savedChildAges by rememberSaveable { mutableStateOf(intArrayOf()) }
+    var infants by rememberSaveable { mutableIntStateOf(0) }
+    val maxAdults = if (flight) SkyscannerMaxAdults else BookingComMaxAdults
+    val adults = (adultInput.toIntOrNull() ?: 1).coerceIn(1, maxAdults)
+    val maxRooms = minOf(adults, BookingComMaxRooms)
+    val rooms = (roomInput.toIntOrNull() ?: 1).coerceIn(1, maxRooms)
+    val maxChildren = if (flight) SkyscannerMaxMinors - infants else BookingComMaxChildren
+    val childAges = if (savedChildAges.size <= maxChildren) savedChildAges else savedChildAges.copyOf(maxChildren)
+    SideEffect {
+        if (adultInput != adults.toString()) adultInput = adults.toString()
+        if (!flight && roomInput != rooms.toString()) roomInput = rooms.toString()
+        if (savedChildAges !== childAges) savedChildAges = childAges
+    }
+    val supportedChildAges = if (flight) 2..17 else 0..17
+    val childrenReady = childAges.all { it in supportedChildAges }
 
+    var openFailed by remember { mutableStateOf(false) }
+    var editor by rememberSaveable { mutableStateOf<BookingSection?>(null) }
+    fun toggle(section: BookingSection) { editor = if (editor == section) null else section }
+    val dates = DateFormat.getDateInstance(DateFormat.MEDIUM)
+    val startLabel = dates.formatUtc(start)
+    val dateSummary = if (flight && !roundTrip) stringResource(R.string.explore_summary, startLabel,
+        stringResource(R.string.explore_oneway)) else stringResource(R.string.trip_route, startLabel, dates.formatUtc(end))
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (flight) {
+            SummaryButton(R.string.explore_route, stringResource(R.string.trip_route,
+                from.ifEmpty { stringResource(R.string.explore_from) },
+                to.ifEmpty { stringResource(R.string.explore_to) })) { toggle(BookingSection.Route) }
+        }
+        if (flight && editor == BookingSection.Route) {
             AirportField(R.string.explore_to, to, airportCities.keys) { code ->
                 to = code
                 if (from == code) from = ""
             }
             AirportField(R.string.explore_from, from.takeUnless { it == to }.orEmpty(), airportCities.keys - to) { from = it }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        }
+        SummaryButton(if (flight) R.string.explore_depart else R.string.explore_arrive, dateSummary) {
+            toggle(BookingSection.Dates)
+        }
+        if (editor == BookingSection.Dates) {
+            if (flight) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(!roundTrip, { roundTrip = false }, { Text(stringResource(R.string.explore_oneway)) })
                 FilterChip(roundTrip, { roundTrip = true }, { Text(stringResource(R.string.explore_round)) })
             }
-        }
-        BookingDate(if (flight) R.string.explore_depart else R.string.explore_arrive, start, today) {
-            chosenStart = it
-        }
-        if (!flight || roundTrip) {
-            BookingDate(if (flight) R.string.explore_return else R.string.explore_leave, end, earliestEnd) {
-                chosenEnd = it
+            BookingDate(if (flight) R.string.explore_depart else R.string.explore_arrive, start, today) {
+                chosenStart = it
+            }
+            if (!flight || roundTrip) {
+                BookingDate(if (flight) R.string.explore_return else R.string.explore_leave, end, earliestEnd) {
+                    chosenEnd = it
+                }
             }
         }
-        CountField(R.string.explore_adults, adultInput) { adultInput = it }
-        if (!flight) CountField(R.string.explore_rooms, roomInput) { roomInput = it }
+        val adultSummary = pluralStringResource(R.plurals.explore_adult_count, adults, adults)
+        val infantSummary = if (flight) pluralStringResource(R.plurals.explore_infant_count, infants, infants) else null
+        val guestSummary = listOfNotNull(
+            adultSummary,
+            pluralStringResource(R.plurals.explore_child_count, childAges.size, childAges.size),
+            infantSummary,
+            if (flight) null else pluralStringResource(R.plurals.explore_room_count, rooms, rooms),
+        ).joinToString(stringResource(R.string.explore_count_separator))
+        SummaryButton(R.string.explore_guests, guestSummary) { toggle(BookingSection.Guests) }
+        if (editor == BookingSection.Guests) {
+            CountStepper(
+                R.string.explore_adults,
+                adults,
+                minimum = if (flight) maxOf(1, infants) else rooms,
+                maximum = maxAdults,
+            ) { adultInput = it.toString() }
+            CountStepper(
+                R.string.explore_children, childAges.size, minimum = 0, maximum = maxChildren,
+            ) { count ->
+                savedChildAges = if (count > childAges.size) {
+                    childAges + UnselectedChildAge
+                } else {
+                    childAges.copyOf(count)
+                }
+            }
+            if (flight) {
+                val maxInfants = minOf(adults, SkyscannerMaxMinors - childAges.size)
+                CountStepper(R.string.explore_infants, infants, minimum = 0, maximum = maxInfants) { infants = it }
+                if (adults == maxAdults || childAges.size == maxChildren) {
+                    BookingLimitNote(R.string.explore_skyscanner_limit, SkyscannerMaxAdults, SkyscannerMaxMinors)
+                }
+                if (infants == adults) BookingLimitNote(R.string.explore_infant_limit)
+            } else {
+                CountStepper(R.string.explore_rooms, rooms, minimum = 1, maximum = maxRooms) {
+                    roomInput = it.toString()
+                }
+                if (adults == maxAdults || childAges.size == maxChildren || rooms == BookingComMaxRooms) {
+                    BookingLimitNote(
+                        R.string.explore_booking_com_limit, BookingComMaxAdults, BookingComMaxChildren, BookingComMaxRooms,
+                    )
+                }
+                if (rooms == adults && rooms < BookingComMaxRooms) BookingLimitNote(R.string.explore_room_limit)
+            }
+            val ageOptions = supportedChildAges.map { it.toString() }
+            childAges.forEachIndexed { index, age ->
+                SuggestedTripField(
+                    value = if (age in supportedChildAges) age.toString() else "",
+                    onValueChange = { selected ->
+                        savedChildAges = childAges.copyOf().apply { this[index] = selected.toInt() }
+                    },
+                    label = stringResource(R.string.explore_child_age, index + 1),
+                    placeholder = stringResource(R.string.explore_choose_age),
+                    suggestions = ageOptions,
+                    enabled = true,
+                )
+            }
+        }
+        if (!childrenReady) {
+            Text(stringResource(if (flight) R.string.explore_choose_flight_ages else R.string.explore_choose_stay_ages),
+                style = MaterialTheme.typography.bodySmall)
+        }
         Button(
-            enabled = adults > 0 && (if (flight) from.isNotEmpty() && to.isNotEmpty() && from != to else rooms > 0),
+            enabled = childrenReady && (!flight || (from.isNotEmpty() && to.isNotEmpty() && from != to)),
             onClick = {
-                val url = if (flight) flightSearchUrl(from, to, start, end.takeIf { roundTrip }, adults)
-                    else staySearchUrl(city, start, end, adults, rooms)
+                val url = if (flight) {
+                    flightSearchUrl(from, to, start, end.takeIf { roundTrip }, adults, childAges.toList(), infants)
+                } else {
+                    staySearchUrl(city, start, end, adults, rooms, childAges.toList())
+                }
                 try {
+                    openFailed = false
                     context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
                 } catch (_: ActivityNotFoundException) {
-                    Toast.makeText(context, R.string.explore_open_failed, Toast.LENGTH_LONG).show()
+                    openFailed = true
                 }
             },
             modifier = Modifier.fillMaxWidth(),
         ) { Text(stringResource(if (flight) R.string.explore_sky else R.string.explore_booking)) }
+        if (openFailed) {
+            Text(stringResource(R.string.explore_open_failed), color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        }
     }
 }
 
@@ -152,10 +270,41 @@ private fun BookingDate(labelId: Int, value: Long, earliest: Long, onChange: (Lo
 }
 
 @Composable
-private fun CountField(label: Int, value: String, onChange: (String) -> Unit) {
-    OutlinedTextField(value = value, onValueChange = {
-        if (it.isEmpty() || it.all(Char::isDigit) && it.toIntOrNull() != null) onChange(it)
-    }, label = { Text(stringResource(label)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        isError = value.isNotEmpty() && value.toIntOrNull() == 0)
+private fun BookingLimitNote(labelId: Int, vararg arguments: Any) {
+    Text(
+        stringResource(labelId, *arguments),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun CountStepper(labelId: Int, count: Int, minimum: Int, maximum: Int, onChange: (Int) -> Unit) {
+    val label = stringResource(labelId)
+    val decrease = stringResource(R.string.explore_decrease_count, label)
+    val increase = stringResource(R.string.explore_increase_count, label)
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+        OutlinedIconButton(onClick = { onChange(count - 1) }, enabled = count > minimum,
+            modifier = Modifier.semantics { contentDescription = decrease }) {
+            Text("−")
+        }
+        Text(count.toString(), Modifier.padding(horizontal = 8.dp))
+        OutlinedIconButton(onClick = { onChange(count + 1) }, enabled = count < maximum,
+            modifier = Modifier.semantics { contentDescription = increase }) {
+            Text("+")
+        }
+    }
+}
+
+private enum class BookingSection { Route, Dates, Guests }
+
+@Composable
+private fun SummaryButton(label: Int, value: String, onClick: () -> Unit) {
+    OutlinedCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
+            Text(stringResource(label), style = MaterialTheme.typography.labelMedium)
+            Text(value, style = MaterialTheme.typography.titleMedium)
+        }
+    }
 }
