@@ -55,12 +55,19 @@ class WorkspaceViewModel @Inject constructor(private val repository: WorkspaceRe
         }
     }
 
-    suspend fun startNew() {
+    suspend fun startNew(destination: TravelPlace? = null) {
         if (mutable.value.draft != null) return
         val currency = try { preferences.preferences.first().currency }
             catch (cancel: CancellationException) { throw cancel }
             catch (_: Exception) { "USD" }
-        edit { PlannerDraft(currency = currency) }
+        if (mutable.value.draft != null) return
+        edit {
+            PlannerDraft(
+                destinationId = destination?.id.orEmpty(),
+                destinationQuery = destination?.name.orEmpty(),
+                currency = currency,
+            )
+        }
         flush()
     }
 

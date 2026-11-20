@@ -1,1 +1,6 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"><item android:id="@id/home_graph" android:icon="@drawable/ic_home" android:title="@string/home_title"/><item android:id="@id/trips_graph" android:icon="@drawable/ic_trips" android:title="@string/trips_nav_label"/><item android:id="@id/tools_graph" android:icon="@drawable/ic_tools" android:title="@string/tools_title"/></menu>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@id/home_graph" android:icon="@drawable/ic_home" android:title="@string/explore_tab" />
+    <item android:id="@id/flight_graph" android:icon="@drawable/ic_flight" android:title="@string/booking_flights" />
+    <item android:id="@id/stay_graph" android:icon="@drawable/ic_stay" android:title="@string/booking_stays" />
+    <item android:id="@id/trips_graph" android:icon="@drawable/ic_trips" android:title="@string/trips_nav_label" />
+</menu>

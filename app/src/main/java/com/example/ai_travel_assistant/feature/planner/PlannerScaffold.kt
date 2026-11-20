@@ -28,6 +28,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,8 +54,15 @@ import kotlinx.coroutines.launch
 private val PlannerLogoSize = 40.dp
 private val ToolbarButtonSize = 48.dp
 
+internal enum class HomeTab(val title: Int, val icon: Int) {
+    Planner(R.string.tab_planner, R.drawable.ic_trip_itinerary),
+    Explore(R.string.tab_explore, R.drawable.ic_explore),
+}
+
 @Composable
 internal fun PlannerScaffold(
+    tab: HomeTab,
+    selectTab: (HomeTab) -> Unit,
     historyEnabled: Boolean,
     openHistory: () -> Unit,
     showTripDetails: () -> Unit,
@@ -71,6 +80,8 @@ internal fun PlannerScaffold(
         }
     }
 
+    val plannerScroll = rememberScrollState()
+    val exploreScroll = rememberScrollState()
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
@@ -92,6 +103,22 @@ internal fun PlannerScaffold(
                     drawerScope.launch { drawerState.open() }
                 }
             },
+            bottomBar = {
+                NavigationBar {
+                    HomeTab.entries.forEach { item ->
+                        NavigationBarItem(
+                            selected = item == tab,
+                            onClick = {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                                selectTab(item)
+                            },
+                            icon = { Icon(painterResource(item.icon), contentDescription = null) },
+                            label = { Text(stringResource(item.title)) },
+                        )
+                    }
+                }
+            },
             contentWindowInsets = WindowInsets.safeDrawing,
         ) { innerPadding ->
             Column(
@@ -110,7 +137,7 @@ internal fun PlannerScaffold(
                             }
                         }
                     }
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(if (tab == HomeTab.Planner) plannerScroll else exploreScroll)
                     .padding(horizontal = 20.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -118,7 +145,7 @@ internal fun PlannerScaffold(
                     modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
-                    PlannerHero()
+                    if (tab == HomeTab.Planner) PlannerHero()
 
                     content()
                 }

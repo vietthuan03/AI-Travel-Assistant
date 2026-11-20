@@ -14,12 +14,14 @@ import com.example.travelassistant.feature.settings.databinding.FragmentSettings
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
     @Inject lateinit var catalog: UiPreviewCatalog
+    @Inject lateinit var destinations: SavedDestinationsRepository
     private var binding: FragmentSettingsBinding?=null
     private val model: SettingsViewModel by viewModels()
     private val display: DisplaySettingsViewModel by viewModels()
@@ -91,7 +93,14 @@ class SettingsFragment : Fragment() {
         val b=binding ?: return
         b.removeData.isEnabled=false
         viewLifecycleOwner.lifecycleScope.launch {
-            val removed=workspace.discard(removeAll=true)
+            val removed = workspace.discard(removeAll = true) && try {
+                destinations.clear()
+                true
+            } catch (canceled: CancellationException) {
+                throw canceled
+            } catch (_: Exception) {
+                false
+            }
             if(binding==null) return@launch
             b.removeData.isEnabled=true
             Snackbar.make(b.root,if(removed) R.string.data_removed else R.string.remove_failed,if(removed) Snackbar.LENGTH_LONG else Snackbar.LENGTH_INDEFINITE)

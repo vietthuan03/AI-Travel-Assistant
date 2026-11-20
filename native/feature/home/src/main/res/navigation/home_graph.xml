@@ -4,4 +4,7 @@
 <argument android:name="previewCase" app:argType="string" android:defaultValue=""/>
 <argument android:name="previewExpiry" app:argType="long" android:defaultValue="0L"/>
 </fragment>
+<fragment android:id="@id/destination_fragment" android:name="com.example.travelassistant.feature.home.DestinationFragment" android:label="@string/explore_details">
+    <argument android:name="destinationId" app:argType="string" android:defaultValue=""/>
+</fragment>
 </navigation>

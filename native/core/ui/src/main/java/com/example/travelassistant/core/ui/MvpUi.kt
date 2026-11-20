@@ -157,6 +157,7 @@ fun Fragment.navigateUi(source: Int, target: Int, args: Bundle? = null, topLevel
     })
 }
 private fun destinationEntry(target: Int): Pair<Int,String>? = when(target) {
+    R.id.destination_fragment -> R.id.home_graph to "ExploreDetail"
     R.id.where_fragment -> R.id.planner_graph to "P01"
     R.id.travelers_fragment -> R.id.planner_graph to "P02"
     R.id.review_fragment -> R.id.planner_graph to "P03"
@@ -177,6 +178,7 @@ fun Fragment.redirectUiEntry(source: Int, screen: String, keepStart: Boolean = f
     val nav=findNavController()
     if(nav.currentDestination?.id!=source || nav.currentBackStackEntry?.savedStateHandle?.get<Boolean>("entryRouted")==true) return false
     val target=when(entry) {
+        "ExploreDetail" -> R.id.destination_fragment
         "P02" -> R.id.travelers_fragment; "P03" -> R.id.review_fragment; "P04" -> R.id.progress_fragment
         "I01" -> R.id.itinerary_fragment; "I02" -> R.id.budget_fragment; "M02" -> R.id.history_fragment
         "T02" -> R.id.currency_fragment; "T03" -> R.id.time_fragment; "T04" -> R.id.weather_fragment
@@ -219,7 +221,7 @@ fun android.widget.EditText.numericInput() {
 
 interface UiPreviewHost { fun openUiPreview() }
 
-fun Fragment.openPlanner(workspace: WorkspaceViewModel, source: Int, resume: Boolean = false) {
+fun Fragment.openPlanner(workspace: WorkspaceViewModel, source: Int, resume: Boolean = false, destination: TravelPlace? = null) {
     val current = workspace.state.value
     if (!current.loaded || current.readFailed) return
     fun enter(discard: Boolean) {
@@ -228,7 +230,7 @@ fun Fragment.openPlanner(workspace: WorkspaceViewModel, source: Int, resume: Boo
                 Snackbar.make(requireView(), R.string.draft_failed, Snackbar.LENGTH_LONG).show()
                 return@launch
             }
-            workspace.startNew()
+            workspace.startNew(destination)
             workspace.flush()
             val nav = findNavController()
             if (!isResumed || nav.currentDestination?.id != source) return@launch

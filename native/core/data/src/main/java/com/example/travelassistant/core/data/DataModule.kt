@@ -38,4 +38,6 @@ abstract class RepositoryBindings {
     @Binds @Singleton abstract fun display(impl: DisplayPreferencesStore): DisplayPreferencesRepository
     @Binds @Singleton abstract fun language(impl: LanguagePreferences): LanguageRepository
     @Binds @Singleton abstract fun trips(impl: LocalTripRepository): TripRepository
+    @Binds @Singleton abstract fun savedDestinations(impl: LocalSavedDestinations): SavedDestinationsRepository
+    @Binds abstract fun bookingLinks(impl: WebBookingLinks): BookingLinkRepository
 }

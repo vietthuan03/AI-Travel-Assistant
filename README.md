@@ -1,6 +1,6 @@
 # AiTravelAssistant · Android
 
-Mở thư mục gốc `AiTravelAssistant/` trong Android Studio và chọn cấu hình `app` để phát triển ứng dụng Jetpack Compose. `native/` là một dự án Kotlin/XML có Gradle wrapper, application ID và luồng lưu chuyến đi riêng.
+Mở thư mục gốc `AiTravelAssistant/` trong Android Studio và chọn cấu hình `app` để phát triển ứng dụng Jetpack Compose. `native/` là một dự án Kotlin/XML có Gradle wrapper, application ID và luồng lưu chuyến đi riêng. Android Studio liên kết cả hai Gradle project khi mở thư mục gốc. Để build ứng dụng XML từ gốc, chạy `./native/gradlew -p native :app:assembleDebug`.
 
 ## Chạy ứng dụng và test
 
@@ -26,7 +26,7 @@ Các đường dẫn dưới đây tính từ `app/src/main/java/com/example/ai_
 | Cấu trúc phản hồi AI, định dạng lịch trình | `data/ai/ItineraryParser.kt` đọc dữ liệu. `ui/itinerary/` hiển thị tuyến đi và timeline dùng chung. |
 | Danh sách, chi tiết và xác nhận xóa | `feature/history/HistoryViewModel.kt` và `TripHistoryDialog.kt` |
 | Truy vấn SQL, schema, ánh xạ bản ghi | `data/local/TripsDatabase.kt` và `RoomTripRepository.kt`. Schema đã xuất nằm tại `app/schemas/`. |
-| Nội dung tiếng Anh và tiếng Việt | `app/src/main/res/values/travel.xml` và `values-vi/travel.xml` |
+| Nội dung tiếng Anh và tiếng Việt | `app/src/main/res/values/strings.xml` và `values-vi/strings.xml` |
 
 ## Theo dõi một lần tạo lịch trình
 

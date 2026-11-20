@@ -1,0 +1,9 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/flight_graph" app:startDestination="@id/flight_fragment">
+    <fragment android:id="@id/flight_fragment"
+        android:name="com.example.travelassistant.feature.home.booking.BookingFragment"
+        android:label="@string/booking_flights">
+        <argument android:name="destinationId" app:argType="string" android:defaultValue="" />
+    </fragment>
+</navigation>

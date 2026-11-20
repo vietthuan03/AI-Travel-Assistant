@@ -14,6 +14,7 @@ object TravelCatalog {
     val places = listOf(
         TravelPlace("danang-vn", "Da Nang", "VN", "Asia/Ho_Chi_Minh"),
         TravelPlace("hanoi-vn", "Hanoi", "VN", "Asia/Ho_Chi_Minh"),
+        TravelPlace("hochiminh-vn", "Ho Chi Minh City", "VN", "Asia/Ho_Chi_Minh"),
         TravelPlace("hoian-vn", "Hoi An", "VN", "Asia/Ho_Chi_Minh"),
         TravelPlace("bangkok-th", "Bangkok", "TH", "Asia/Bangkok"),
         TravelPlace("tokyo-jp", "Tokyo", "JP", "Asia/Tokyo"),

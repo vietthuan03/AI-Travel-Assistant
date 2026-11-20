@@ -11,6 +11,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import android.app.LocaleManager
 import android.os.Build
 import android.os.LocaleList
+import android.graphics.Rect
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.platform.app.InstrumentationRegistry
 import com.example.travelassistant.core.domain.LanguageRepository
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -22,7 +26,6 @@ import com.example.travelassistant.feature.settings.R as SettingsR
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.hamcrest.Matchers.allOf
 import androidx.lifecycle.ViewModelProvider
 import com.example.travelassistant.core.ui.WorkspaceViewModel
 import com.example.travelassistant.core.domain.PlannerDraft
@@ -45,6 +48,31 @@ class FoundationNavigationTest {
         }
         fail("Foundation did not reach the expected state")
     }
+    private fun scrollToHomeAction(scenario: ActivityScenario<MainActivity>, id: Int) {
+        var count = 0
+        await {
+            scenario.onActivity { activity ->
+                count = activity.findViewById<RecyclerView>(UiR.id.content_list)?.adapter?.itemCount ?: 0
+            }
+            count > 0
+        }
+        for (position in 0 until count) {
+            scenario.onActivity {
+                val layout = it.findViewById<RecyclerView>(UiR.id.content_list).layoutManager as LinearLayoutManager
+                layout.scrollToPositionWithOffset(position, 0)
+            }
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+            var visible = false
+            scenario.onActivity { activity ->
+                val action = activity.findViewById<android.view.View>(id) ?: return@onActivity
+                val bounds = Rect()
+                visible = action.getGlobalVisibleRect(bounds) && bounds.height() >= action.height * 0.9
+            }
+            if (visible) return
+        }
+        fail("Home action $id is not visible")
+    }
+
     private fun prepareWorkspace(scenario: ActivityScenario<MainActivity>, valid: Boolean=false) {
         var model: WorkspaceViewModel?=null
         await { var loaded=false;scenario.onActivity { model=ViewModelProvider(it)[WorkspaceViewModel::class.java];loaded=model!!.state.value.loaded };loaded }
@@ -57,13 +85,17 @@ class FoundationNavigationTest {
             }
             runBlocking { model!!.flush() }
         }
-        await { var ready=false;scenario.onActivity { ready=it.findViewById<android.view.View>(if(valid) UiR.id.resume_draft_action else UiR.id.plan_trip_action)?.let { v -> v.isShown && v.isEnabled }==true };ready }
+        val action = if (valid) UiR.id.resume_draft_action else UiR.id.plan_trip_action
+        scrollToHomeAction(scenario, action)
+        await { var enabled = false; scenario.onActivity { enabled = it.findViewById<android.view.View>(action)?.isEnabled == true }; enabled }
     }
-    @Test fun allFourteenDestinationsInflateAndSurviveRecreation() {
+    @Test fun allDestinationsInflateAndSurviveRecreation() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             awaitShell(scenario)
             val graphs=listOf(
-                UiR.id.home_graph to listOf(UiR.id.home_fragment),
+                UiR.id.home_graph to listOf(UiR.id.home_fragment, UiR.id.destination_fragment),
+                UiR.id.flight_graph to listOf(UiR.id.flight_fragment),
+                UiR.id.stay_graph to listOf(UiR.id.stay_fragment),
                 UiR.id.planner_graph to listOf(UiR.id.where_fragment,UiR.id.travelers_fragment,UiR.id.review_fragment,UiR.id.progress_fragment,UiR.id.itinerary_fragment,UiR.id.budget_fragment),
                 UiR.id.trips_graph to listOf(UiR.id.trips_fragment,UiR.id.history_fragment),
                 UiR.id.tools_graph to listOf(UiR.id.tools_fragment,UiR.id.currency_fragment,UiR.id.time_fragment,UiR.id.weather_fragment),
@@ -141,8 +173,8 @@ class FoundationNavigationTest {
                 nav.currentBackStackEntry!!.savedStateHandle["review_marker"]="kept"
             }
             onView(withId(UiR.id.home_graph)).perform(click())
-            scenario.onActivity { it.findViewById<androidx.recyclerview.widget.RecyclerView>(UiR.id.content_list).scrollToPosition(2) }
-            onView(allOf(withId(UiR.id.row_secondary), androidx.test.espresso.matcher.ViewMatchers.withText(UiR.string.trips_title))).perform(click())
+            scrollToHomeAction(scenario, UiR.id.trips_shortcut)
+            onView(withId(UiR.id.trips_shortcut)).perform(click())
             scenario.onActivity {
                 val nav=(it.supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
                 assertEquals(UiR.id.trips_fragment,nav.currentDestination?.id)
@@ -212,7 +244,8 @@ class FoundationNavigationTest {
     @Test fun switchingLanguagePreservesTheToolsReturnRouteAndRelabelsTheToolbar() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             awaitShell(scenario)
-            onView(withId(UiR.id.tools_graph)).perform(click())
+            scrollToHomeAction(scenario, UiR.id.tools_shortcut)
+            onView(withId(UiR.id.tools_shortcut)).perform(click())
             scenario.onActivity {
                 val nav=(it.supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
                 nav.currentBackStackEntry!!.savedStateHandle["language_marker"]="unchanged"

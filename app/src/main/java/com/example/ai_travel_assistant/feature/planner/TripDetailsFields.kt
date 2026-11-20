@@ -182,7 +182,7 @@ internal fun TripDates(
 }
 
 @Composable
-private fun TripDateButton(
+internal fun TripDateButton(
     label: String,
     date: Long?,
     enabled: Boolean,

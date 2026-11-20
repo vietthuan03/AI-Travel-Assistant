@@ -2,9 +2,11 @@ package com.example.travelassistant.feature.trips
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import com.example.travelassistant.core.domain.ExploreCatalog
 import com.example.travelassistant.core.domain.UiPreviewCatalog
 import com.example.travelassistant.core.ui.*
 import com.example.travelassistant.core.ui.R
@@ -32,6 +34,7 @@ class TripsFragment : MvpListFragment() {
     @Inject lateinit var catalog: UiPreviewCatalog
     private val trips: TripsViewModel by viewModels()
     private val model: TripsPreviewViewModel by viewModels()
+    private val destinations: SavedDestinationsViewModel by activityViewModels()
     private val workspace: WorkspaceViewModel by activityViewModels()
     override fun onViewCreated(view: View,state: Bundle?) {
         super.onViewCreated(view,state)
@@ -41,8 +44,11 @@ class TripsFragment : MvpListFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val ticks=flow { while(true) { emit(System.currentTimeMillis());delay(250) } }
-                combine(trips.state,trips.savedTrips,workspace.state,model.name,model.deleted,combine(model.until,ticks) { until,now -> until>now }.distinctUntilChanged()) { values -> values }
-                    .collect { render() }
+                launch {
+                    combine(trips.state,trips.savedTrips,workspace.state,model.name,model.deleted,combine(model.until,ticks) { until,now -> until>now }.distinctUntilChanged()) { values -> values }
+                        .collect { render() }
+                }
+                if (sample == null) launch { destinations.state.collect { render() } }
             }
         }
     }
@@ -72,6 +78,20 @@ class TripsFragment : MvpListFragment() {
         })
         if(sample!=null && model.deleted.value && System.currentTimeMillis()<model.until.value) list+=UiSection("undo",getString(R.string.trip_deleted),primary=action(R.string.undo) { model.undo() })
         if(sample?.state=="cleanupfail") list+=UiSection("cleanup",getString(R.string.cleanup_failed),primary=action(R.string.retry) { sampleAction() })
+        if (sample == null) {
+            val bookmarks = destinations.state.value
+            if (bookmarks.readFailed) {
+                list += UiSection("bookmarks_error", getString(R.string.data_read_error),
+                    primary = action(R.string.retry) { destinations.retry() })
+            }
+            ExploreCatalog.destinations.filter { it.placeId in bookmarks.ids.orEmpty() }.forEach { destination ->
+                list += UiSection("bookmark_${destination.placeId}", destinationTitle(destination),
+                    badge = getString(R.string.explore_saved_destination),
+                    primary = action(R.string.explore_details) {
+                        navigateUi(R.id.trips_fragment, R.id.destination_fragment, bundleOf("destinationId" to destination.placeId))
+                    })
+            }
+        }
         rows(list)
     }
     private fun renameSample() {

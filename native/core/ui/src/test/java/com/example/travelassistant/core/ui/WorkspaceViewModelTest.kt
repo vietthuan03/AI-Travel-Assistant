@@ -40,6 +40,20 @@ class WorkspaceViewModelTest {
         assertEquals(DraftStorage.KEPT,vm.state.value.storage)
         val count=repo.writes;vm.flush();assertEquals(count,repo.writes)
     }
+    @Test fun exploreDestinationSeedsOnlyANewDraft() = runTest(dispatcher) {
+        val repo = Local()
+        val vm = model(repo)
+        runCurrent()
+        val daNang = requireNotNull(TravelCatalog.place("danang-vn"))
+        vm.startNew(daNang)
+        assertEquals(daNang.id, repo.disk.value?.destinationId)
+        assertEquals(daNang.name, repo.disk.value?.destinationQuery)
+        assertEquals("EUR", repo.disk.value?.currency)
+        vm.startNew(requireNotNull(TravelCatalog.place("hanoi-vn")))
+        assertEquals(daNang.id, repo.disk.value?.destinationId)
+        assertEquals(1, repo.writes)
+    }
+
     @Test fun failedWriteKeepsNewInputsInMemoryAndOlderDraftOnDiskUntilRetry() = runTest(dispatcher) {
         val repo=Local();val vm=model(repo);runCurrent();vm.startNew()
         repo.fail=true;vm.edit { it.copy(notes="Newer note") };vm.flush()

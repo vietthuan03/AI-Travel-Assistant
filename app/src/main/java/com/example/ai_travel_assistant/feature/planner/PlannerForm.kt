@@ -19,7 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import com.example.ai_travel_assistant.feature.explore.ExploreScreen
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -39,7 +41,7 @@ import com.example.ai_travel_assistant.ui.format.asDisplayDate
 import com.example.ai_travel_assistant.ui.format.formatTripBudget
 import com.example.ai_travel_assistant.ui.format.normalizeTripBudget
 import com.example.ai_travel_assistant.ui.theme.AiTravelAssistantTheme
-import kotlinx.coroutines.launch
+
 
 private val GenerateButtonMinHeight = 56.dp
 
@@ -88,24 +90,47 @@ internal fun PlannerForm(state: PlannerUiState, generate: (TripRequest, String) 
     }
 
     val focusManager = LocalFocusManager.current
-    val scrollScope = rememberCoroutineScope()
+    var tab by rememberSaveable { mutableStateOf(HomeTab.Planner) }
+    val tabState = rememberSaveableStateHolder()
+    var scrollTarget by remember { mutableStateOf<BringIntoViewRequester?>(null) }
     val tripDetailsRequester = remember { BringIntoViewRequester() }
     val itineraryRequester = remember { BringIntoViewRequester() }
 
+    LaunchedEffect(scrollTarget, tab) {
+        if (tab == HomeTab.Planner) {
+            scrollTarget?.bringIntoView()
+            scrollTarget = null
+        }
+    }
+
     PlannerScaffold(
+        tab = tab,
+        selectTab = { tab = it },
         historyEnabled = !loading,
         openHistory = openHistory,
         showTripDetails = {
             focusManager.clearFocus()
-            scrollScope.launch { tripDetailsRequester.bringIntoView() }
+            tab = HomeTab.Planner
+            scrollTarget = tripDetailsRequester
         },
         showLatestItinerary = if (state is PlannerUiState.Success) {
             {
                 focusManager.clearFocus()
-                scrollScope.launch { itineraryRequester.bringIntoView() }
+                tab = HomeTab.Planner
+                scrollTarget = itineraryRequester
             }
         } else null,
     ) {
+        if (tab == HomeTab.Explore) {
+            tabState.SaveableStateProvider(HomeTab.Explore) {
+                ExploreScreen(cities, today, canPlan = !loading) { selected ->
+                    destination = selected
+                    tab = HomeTab.Planner
+                    scrollTarget = tripDetailsRequester
+                }
+            }
+            return@PlannerScaffold
+        }
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             SuggestedTripField(
                 modifier = Modifier.bringIntoViewRequester(tripDetailsRequester),

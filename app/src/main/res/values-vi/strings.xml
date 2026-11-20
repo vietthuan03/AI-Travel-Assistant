@@ -25,19 +25,17 @@
     <string name="failed_plan">Chưa tạo được lịch trình</string>
     <string name="result_plan">Lịch trình gợi ý</string>
     <string name="retry_hint">Nhấn Tạo lịch trình để thử lại.</string>
-    <string-array name="trip_city_suggestions">
-        <item>Hà Nội, Việt Nam</item>
-        <item>TP. Hồ Chí Minh, Việt Nam</item>
-        <item>Đà Nẵng, Việt Nam</item>
-        <item>Đà Lạt, Việt Nam</item>
-        <item>Nha Trang, Việt Nam</item>
-        <item>Bangkok, Thái Lan</item>
-        <item>Singapore</item>
-        <item>Tokyo, Nhật Bản</item>
-        <item>Seoul, Hàn Quốc</item>
-        <item>Ahmedabad (AMD), Ấn Độ</item>
-        <item>Goa (GOI), Ấn Độ</item>
-    </string-array>
+    <string name="city_hanoi">Hà Nội, Việt Nam</string>
+    <string name="city_hcmc">TP. Hồ Chí Minh, Việt Nam</string>
+    <string name="city_danang">Đà Nẵng, Việt Nam</string>
+    <string name="city_dalat">Đà Lạt, Việt Nam</string>
+    <string name="city_nhatrang">Nha Trang, Việt Nam</string>
+    <string name="city_bangkok">Bangkok, Thái Lan</string>
+    <string name="city_singapore">Singapore</string>
+    <string name="city_tokyo">Tokyo, Nhật Bản</string>
+    <string name="city_seoul">Seoul, Hàn Quốc</string>
+    <string name="city_ahmedabad">Ahmedabad (AMD), Ấn Độ</string>
+    <string name="city_goa">Goa (GOI), Ấn Độ</string>
     <string-array name="trip_purpose_suggestions">
         <item>Nghỉ dưỡng</item>
         <item>Công tác</item>
@@ -82,4 +80,26 @@
     <string name="planner_menu_trip_details">Thông tin chuyến đi</string>
     <string name="planner_menu_latest_itinerary">Lịch trình vừa tạo</string>
     <string name="planner_open_history">Mở lịch sử chuyến đi</string>
+
+    <string name="tab_planner">Lịch trình</string>
+    <string name="tab_explore">Khám phá</string>
+    <string name="explore_destination">Điểm đến</string>
+    <string name="explore_plan">Lập lịch trình</string>
+    <string name="explore_flights">Tìm chuyến bay</string>
+    <string name="explore_stays">Tìm phòng</string>
+    <string name="explore_from">Sân bay đi</string>
+    <string name="explore_to">Sân bay đến</string>
+    <string name="explore_depart">Ngày bay</string>
+    <string name="explore_return">Ngày bay về</string>
+    <string name="explore_round">Khứ hồi</string>
+    <string name="explore_oneway">Một chiều</string>
+    <string name="explore_arrive">Ngày nhận phòng</string>
+    <string name="explore_leave">Ngày trả phòng</string>
+    <string name="explore_adults">Người lớn</string>
+    <string name="explore_rooms">Số phòng</string>
+    <string name="explore_sky">Tìm trên Skyscanner</string>
+    <string name="explore_booking">Tìm trên Booking.com</string>
+    <string name="explore_open_failed">Không có ứng dụng mở được liên kết này.</string>
+    <string name="explore_airport_hint">Chọn sân bay</string>
+    <string name="explore_airport_option">%1$s · %2$s</string>
 </resources>

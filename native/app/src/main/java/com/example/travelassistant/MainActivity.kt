@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), UiPreviewHost {
     private var navController: NavController?=null
     private var shell: ActivityMainBinding?=null
     private var startupJob: Job?=null
-    private val primaryDestinations = setOf(UiR.id.home_fragment,UiR.id.trips_fragment,UiR.id.tools_fragment)
+    private val primaryDestinations = setOf(UiR.id.home_fragment, UiR.id.flight_fragment, UiR.id.stay_fragment, UiR.id.trips_fragment)
     private lateinit var appBar: AppBarConfiguration
     override fun onCreate(state: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { !localeReady }
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), UiPreviewHost {
         setSupportActionBar(binding.toolbar)
         val nav=(supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
         navController=nav
-        appBar=AppBarConfiguration(setOf(UiR.id.home_graph,UiR.id.trips_graph,UiR.id.tools_graph))
+        appBar=AppBarConfiguration(setOf(UiR.id.home_graph, UiR.id.flight_graph, UiR.id.stay_graph, UiR.id.trips_graph))
         setupActionBarWithNavController(nav,appBar)
         binding.bottomNav.setupWithNavController(nav)
         nav.addOnDestinationChangedListener { _,destination,_ ->

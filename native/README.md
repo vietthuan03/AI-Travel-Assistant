@@ -21,3 +21,16 @@ Live generation needs a compatible backend plus provider credentials configured 
 Drafts are autosaved locally. A candidate generated through the backend can be explicitly saved and reopened offline. Saving changes creates a new version. Previous saved versions stay available for read-only viewing.
 
 The ordinary UI tests exercise navigation, validation and local recovery. The live-provider and simulated API tests have separate opt-in instrumentation flags. Use isolated test packages for data-clearing fixtures.
+
+## Explore and booking
+
+Explore includes curated guides for Da Nang, Hanoi, and Ho Chi Minh City. Saved destinations are available in My Trips and are removed by Settings → Remove travel data. The flight and stay forms are independent of AI generation.
+
+The default build opens the public Skyscanner or Booking.com website. The app tells travelers to re-enter their search there. To prefill a search, supply the approved public HTTPS URL templates as Gradle properties for the build. Use the provider's documented parameter names and include these placeholders in the path or query:
+
+| Property | Placeholders |
+|---|---|
+| `flightSearchUrlTemplate` | `{origin}` and `{destination}` (IATA codes), `{start}`, `{end}` (ISO dates, empty end for one way), `{adults}` |
+| `staySearchUrlTemplate` | `{destination}` (city name), `{start}`, `{end}` (ISO check-in and check-out dates), `{adults}`, `{rooms}` |
+
+Templates are embedded in the APK and must contain only public URLs. Verify the exact route, dates, guests, and one-way behavior against the provider on Android before enabling prefill.
