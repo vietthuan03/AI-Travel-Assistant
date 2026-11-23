@@ -7,23 +7,23 @@ class BookingLinksTest {
     @Test
     fun flightLinksCarryAirportsDatesAndPassengerCount() {
         val outbound = "https://www.skyscanner.com/transport/flights/han/dad/700101/"
-        assertEquals(outbound + "?adultsv2=2", flightSearchUrl("HAN", "DAD", 0L, null, 2))
-        assertEquals(outbound + "700102/?adultsv2=3", flightSearchUrl("HAN", "DAD", 0L, 86_400_000L, 3))
+        assertEquals(outbound + "?adultsv2=2&cabinclass=economy", flightSearchUrl("HAN", "DAD", 0L, null, 2))
+        assertEquals(outbound + "700102/?adultsv2=3&cabinclass=economy", flightSearchUrl("HAN", "DAD", 0L, 86_400_000L, 3))
     }
 
     @Test
     fun flightLinkIncludesEachChildAge() {
         assertEquals(
-            "https://www.skyscanner.com/transport/flights/han/dad/700101/?adultsv2=2&childrenv2=4%7C12",
+            "https://www.skyscanner.com/transport/flights/han/dad/700101/?adultsv2=2&childrenv2=4%7C12&cabinclass=economy",
             flightSearchUrl("HAN", "DAD", 0L, null, 2, listOf(4, 12)),
         )
     }
 
     @Test
-    fun flightLinkIncludesLapInfantsSeparatelyFromChildAges() {
+    fun flightLinkIncludesYoungestAndOldestChildrenAndSelectedCabin() {
         assertEquals(
-            "https://www.skyscanner.com/transport/flights/han/dad/700101/?adultsv2=4&childrenv2=5%7C8%7C10&infants=4",
-            flightSearchUrl("HAN", "DAD", 0L, null, 4, listOf(5, 8, 10), infants = 4),
+            "https://www.skyscanner.com/transport/flights/han/dad/700101/?adultsv2=4&childrenv2=0%7C1%7C17&cabinclass=business",
+            flightSearchUrl("HAN", "DAD", 0L, null, 4, listOf(0, 1, 17), CabinClass.Business),
         )
     }
 

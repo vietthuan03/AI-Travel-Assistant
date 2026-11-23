@@ -1,11 +1,19 @@
 package com.example.ai_travel_assistant.feature.explore
 
 import com.example.ai_travel_assistant.domain.trip.formatUtc
+import com.example.ai_travel_assistant.R
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 private fun Long.partnerDate(pattern: String) = SimpleDateFormat(pattern, Locale.US).formatUtc(this)
+
+internal enum class CabinClass(val queryValue: String, val label: Int) {
+    Economy("economy", R.string.explore_cabin_economy),
+    PremiumEconomy("premiumeconomy", R.string.explore_cabin_premium),
+    Business("business", R.string.explore_cabin_business),
+    First("first", R.string.explore_cabin_first),
+}
 
 internal fun flightSearchUrl(
     from: String,
@@ -14,7 +22,7 @@ internal fun flightSearchUrl(
     returnDate: Long?,
     adults: Int,
     childAges: List<Int> = emptyList(),
-    infants: Int = 0,
+    cabinClass: CabinClass = CabinClass.Economy,
 ) =
     buildString {
         append("https://www.skyscanner.com/transport/flights/")
@@ -25,7 +33,7 @@ internal fun flightSearchUrl(
         if (childAges.isNotEmpty()) {
             append("&childrenv2=").append(childAges.joinToString("%7C"))
         }
-        if (infants > 0) append("&infants=").append(infants)
+        append("&cabinclass=").append(cabinClass.queryValue)
     }
 
 internal fun staySearchUrl(city: String, checkIn: Long, checkOut: Long, adults: Int, rooms: Int, childAges: List<Int> = emptyList()) =

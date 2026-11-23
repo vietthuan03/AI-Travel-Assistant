@@ -135,19 +135,19 @@ private fun BookingForm(type: BookingType, city: String, today: Long, trip: Trip
     var adultInput by rememberSaveable { mutableStateOf("1") }
     var roomInput by rememberSaveable { mutableStateOf("1") }
     var savedChildAges by rememberSaveable { mutableStateOf(intArrayOf()) }
-    var infants by rememberSaveable { mutableIntStateOf(0) }
+    var cabin by rememberSaveable { mutableStateOf(CabinClass.Economy) }
     val maxAdults = if (flight) SkyscannerMaxAdults else BookingComMaxAdults
     val adults = (adultInput.toIntOrNull() ?: 1).coerceIn(1, maxAdults)
     val maxRooms = minOf(adults, BookingComMaxRooms)
     val rooms = (roomInput.toIntOrNull() ?: 1).coerceIn(1, maxRooms)
-    val maxChildren = if (flight) SkyscannerMaxMinors - infants else BookingComMaxChildren
+    val maxChildren = if (flight) SkyscannerMaxMinors else BookingComMaxChildren
     val childAges = if (savedChildAges.size <= maxChildren) savedChildAges else savedChildAges.copyOf(maxChildren)
     SideEffect {
         if (adultInput != adults.toString()) adultInput = adults.toString()
         if (!flight && roomInput != rooms.toString()) roomInput = rooms.toString()
         if (savedChildAges !== childAges) savedChildAges = childAges
     }
-    val supportedChildAges = if (flight) 2..17 else 0..17
+    val supportedChildAges = 0..17
     val childrenReady = childAges.all { it in supportedChildAges }
 
     var openFailed by remember { mutableStateOf(false) }
@@ -188,23 +188,34 @@ private fun BookingForm(type: BookingType, city: String, today: Long, trip: Trip
             }
         }
         val adultSummary = pluralStringResource(R.plurals.explore_adult_count, adults, adults)
-        val infantSummary = if (flight) pluralStringResource(R.plurals.explore_infant_count, infants, infants) else null
         val guestSummary = listOfNotNull(
             adultSummary,
             pluralStringResource(R.plurals.explore_child_count, childAges.size, childAges.size),
-            infantSummary,
-            if (flight) null else pluralStringResource(R.plurals.explore_room_count, rooms, rooms),
+            if (flight) stringResource(cabin.label) else pluralStringResource(R.plurals.explore_room_count, rooms, rooms),
         ).joinToString(stringResource(R.string.explore_count_separator))
-        SummaryButton(R.string.explore_guests, guestSummary) { toggle(BookingSection.Guests) }
+        SummaryButton(if (flight) R.string.explore_cabin_guests else R.string.explore_guests, guestSummary) { toggle(BookingSection.Guests) }
         if (editor == BookingSection.Guests) {
+            if (flight) {
+                val cabinOptions = CabinClass.entries.associateBy { stringResource(it.label) }
+                SuggestedTripField(
+                    value = stringResource(cabin.label),
+                    onValueChange = { cabin = cabinOptions.getValue(it) },
+                    label = stringResource(R.string.explore_cabin),
+                    placeholder = "",
+                    suggestions = cabinOptions.keys.toList(),
+                    enabled = true,
+                )
+            }
             CountStepper(
                 R.string.explore_adults,
                 adults,
-                minimum = if (flight) maxOf(1, infants) else rooms,
+                minimum = if (flight) 1 else rooms,
                 maximum = maxAdults,
+                hint = if (flight) stringResource(R.string.explore_adults_age_range) else null,
             ) { adultInput = it.toString() }
             CountStepper(
                 R.string.explore_children, childAges.size, minimum = 0, maximum = maxChildren,
+                hint = if (flight) stringResource(R.string.explore_children_age_range) else null,
             ) { count ->
                 savedChildAges = if (count > childAges.size) {
                     childAges + UnselectedChildAge
@@ -213,12 +224,9 @@ private fun BookingForm(type: BookingType, city: String, today: Long, trip: Trip
                 }
             }
             if (flight) {
-                val maxInfants = minOf(adults, SkyscannerMaxMinors - childAges.size)
-                CountStepper(R.string.explore_infants, infants, minimum = 0, maximum = maxInfants) { infants = it }
                 if (adults == maxAdults || childAges.size == maxChildren) {
                     BookingLimitNote(R.string.explore_skyscanner_limit, SkyscannerMaxAdults, SkyscannerMaxMinors)
                 }
-                if (infants == adults) BookingLimitNote(R.string.explore_infant_limit)
             } else {
                 CountStepper(R.string.explore_rooms, rooms, minimum = 1, maximum = maxRooms) {
                     roomInput = it.toString()
@@ -245,14 +253,14 @@ private fun BookingForm(type: BookingType, city: String, today: Long, trip: Trip
             }
         }
         if (!childrenReady) {
-            Text(stringResource(if (flight) R.string.explore_choose_flight_ages else R.string.explore_choose_stay_ages),
+            Text(stringResource(R.string.explore_choose_child_ages),
                 style = MaterialTheme.typography.bodySmall)
         }
         Button(
             enabled = childrenReady && (!flight || (from.isNotEmpty() && to.isNotEmpty() && from != to)),
             onClick = {
                 val url = if (flight) {
-                    flightSearchUrl(from, to, start, end.takeIf { roundTrip }, adults, childAges.toList(), infants)
+                    flightSearchUrl(from, to, start, end.takeIf { roundTrip }, adults, childAges.toList(), cabin)
                 } else {
                     staySearchUrl(city, start, end, adults, rooms, childAges.toList())
                 }
@@ -304,12 +312,15 @@ private fun BookingLimitNote(labelId: Int, vararg arguments: Any) {
 }
 
 @Composable
-private fun CountStepper(labelId: Int, count: Int, minimum: Int, maximum: Int, onChange: (Int) -> Unit) {
+private fun CountStepper(labelId: Int, count: Int, minimum: Int, maximum: Int, hint: String? = null, onChange: (Int) -> Unit) {
     val label = stringResource(labelId)
     val decrease = stringResource(R.string.explore_decrease_count, label)
     val increase = stringResource(R.string.explore_increase_count, label)
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+        Column(Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
+            if (hint != null) Text(hint, style = MaterialTheme.typography.bodySmall)
+        }
         OutlinedIconButton(onClick = { onChange(count - 1) }, enabled = count > minimum,
             modifier = Modifier.semantics { contentDescription = decrease }) {
             Text("−")

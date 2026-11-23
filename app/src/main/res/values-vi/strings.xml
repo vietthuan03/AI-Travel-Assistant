@@ -123,22 +123,23 @@
     <string name="explore_increase_count">Tăng %1$s</string>
     <string name="explore_child_age">Tuổi của trẻ thứ %1$d</string>
     <string name="explore_choose_age">Chọn tuổi</string>
-    <string name="explore_choose_flight_ages">Chọn tuổi từng trẻ (2–17 tuổi).</string>
-    <string name="explore_choose_stay_ages">Chọn tuổi từng trẻ (0–17 tuổi).</string>
+    <string name="explore_choose_child_ages">Chọn tuổi từng trẻ (0–17 tuổi).</string>
     <string name="explore_count_separator">" · "</string>
     <plurals name="explore_child_count">
         <item quantity="one">%d trẻ em</item>
         <item quantity="other">%d trẻ em</item>
     </plurals>
-    <string name="explore_infants">Trẻ dưới 2 tuổi (ngồi cùng người lớn)</string>
-    <string name="explore_skyscanner_limit">Skyscanner cho phép tối đa %1$d người lớn và %2$d trẻ em, kể cả trẻ dưới 2 tuổi.</string>
-    <string name="explore_infant_limit">Số trẻ dưới 2 tuổi không được vượt quá số người lớn.</string>
+    <string name="explore_adults_age_range">Từ 18 tuổi trở lên</string>
+    <string name="explore_children_age_range">Từ 0 đến 17 tuổi</string>
+    <string name="explore_cabin_guests">Hạng khoang và hành khách</string>
+    <string name="explore_cabin">Hạng khoang</string>
+    <string name="explore_cabin_economy">Phổ thông</string>
+    <string name="explore_cabin_premium">Phổ thông đặc biệt</string>
+    <string name="explore_cabin_business">Thương gia</string>
+    <string name="explore_cabin_first">Hạng nhất</string>
+    <string name="explore_skyscanner_limit">Skyscanner cho phép tối đa %1$d người lớn và %2$d trẻ em.</string>
     <string name="explore_booking_com_limit">Giới hạn tìm trên Booking.com là %1$d người lớn, %2$d trẻ em và %3$d phòng.</string>
     <string name="explore_room_limit">Số phòng không được vượt quá số người lớn.</string>
-    <plurals name="explore_infant_count">
-        <item quantity="one">%d trẻ dưới 2 tuổi</item>
-        <item quantity="other">%d trẻ dưới 2 tuổi</item>
-    </plurals>
     <string name="openai_settings_title">Cài đặt OpenAI</string>
     <string name="openai_active">Đang dùng OpenAI</string>
     <string name="openai_inactive">Đang dùng Gemini</string>

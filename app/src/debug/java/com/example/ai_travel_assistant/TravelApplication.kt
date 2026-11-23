@@ -18,7 +18,7 @@ class TravelApplication : Application() {
                 Log.d("APP_CHECK", "Token length: ${result.token.length}")
             }
             .addOnFailureListener { exception ->
-                Log.e("APP_CHECK", "Failed to get token", exception)
+                Log.e("APP_CHECK", "Failed to get token. Ensure the debug secret logged under tag DebugAppCheckProvider is added to Firebase Console -> App Check -> Manage debug tokens.", exception)
             }
     }
 }

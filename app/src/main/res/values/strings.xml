@@ -138,22 +138,23 @@
     <string name="explore_increase_count">Increase %1$s</string>
     <string name="explore_child_age">Age of child %1$d</string>
     <string name="explore_choose_age">Select age</string>
-    <string name="explore_choose_flight_ages">Select each child’s age (2–17).</string>
-    <string name="explore_choose_stay_ages">Select each child’s age (0–17).</string>
+    <string name="explore_choose_child_ages">Select each child’s age (0–17).</string>
     <string name="explore_count_separator">" · "</string>
     <plurals name="explore_child_count">
         <item quantity="one">%d child</item>
         <item quantity="other">%d children</item>
     </plurals>
-    <string name="explore_infants">Infants (under 2, on lap)</string>
-    <string name="explore_skyscanner_limit">Skyscanner allows up to %1$d adults and %2$d children, including infants.</string>
-    <string name="explore_infant_limit">The number of infants cannot exceed the number of adults.</string>
+    <string name="explore_adults_age_range">Ages 18 and over</string>
+    <string name="explore_children_age_range">Ages 0 to 17</string>
+    <string name="explore_cabin_guests">Cabin class and travellers</string>
+    <string name="explore_cabin">Cabin class</string>
+    <string name="explore_cabin_economy">Economy</string>
+    <string name="explore_cabin_premium">Premium economy</string>
+    <string name="explore_cabin_business">Business</string>
+    <string name="explore_cabin_first">First</string>
+    <string name="explore_skyscanner_limit">Skyscanner allows up to %1$d adults and %2$d children.</string>
     <string name="explore_booking_com_limit">Booking.com search limits: %1$d adults, %2$d children, %3$d rooms.</string>
     <string name="explore_room_limit">The number of rooms cannot exceed the number of adults.</string>
-    <plurals name="explore_infant_count">
-        <item quantity="one">%d infant</item>
-        <item quantity="other">%d infants</item>
-    </plurals>
     <string name="openai_settings_title">OpenAI settings</string>
     <string name="openai_active">Current provider: OpenAI</string>
     <string name="openai_inactive">Current provider: Gemini</string>

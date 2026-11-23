@@ -12,8 +12,25 @@ Dùng Gradle wrapper ở thư mục gốc, JDK 21 và Android SDK Platform 37. F
 | Cài bản debug lên thiết bị hoặc emulator | `./gradlew :app:installDebug` |
 | Chạy kiểm thử tích hợp Room trên Android | `./gradlew :app:connectedDebugAndroidTest` |
 
-## Tìm đúng chỗ để sửa
+### Computer use trên macOS
 
+[`agent-desktop`](https://github.com/vercel-labs/agent-desktop) là CLI chạy trên máy Mac để thao tác với cửa sổ Android Studio và emulator. Hướng dẫn cho Codex nằm trong `AGENTS.md` ở thư mục gốc.
+
+Trong Terminal trên máy Mac, cài CLI và kiểm tra quyền Accessibility:
+
+```sh
+npm install -g agent-desktop
+agent-desktop version
+agent-desktop status
+agent-desktop permissions --guide
+```
+
+Sau khi cấp quyền, chạy `agent-desktop snapshot --app Finder -i` để kiểm tra CLI đọc được giao diện. Mở project trong Android Studio, chạy cấu hình `app` trên emulator, rồi dùng `agent-desktop list-apps` và lấy snapshot của cửa sổ cần kiểm tra theo đúng tên trả về.
+
+Với lỗi Generate, chạy một chuyến thử trong Planner và kiểm tra thông báo hoặc lịch trình xuất hiện. Nếu snapshot chỉ thấy khung emulator, dùng ADB hoặc kiểm thử Compose để thao tác bên trong Android. Dùng `adb logcat -s TravelAI` để đối chiếu lỗi khi tái hiện.
+
+## Tìm đúng chỗ để sửa
+    
 Các đường dẫn dưới đây tính từ `app/src/main/java/com/example/ai_travel_assistant/`.
 
 | Khi cần sửa | Bắt đầu ở |
