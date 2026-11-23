@@ -67,6 +67,7 @@ internal enum class HomeTab {
 internal fun PlannerScaffold(
     tab: HomeTab,
     selectTab: (HomeTab) -> Unit,
+    onReturnToItinerary: (() -> Unit)?,
     onExit: () -> Unit,
     openAiSettings: (() -> Unit)?,
     historyEnabled: Boolean,
@@ -94,8 +95,8 @@ internal fun PlannerScaffold(
         focusManager.clearFocus()
         keyboardController?.hide()
         when (tab) {
-            HomeTab.Explore -> selectTab(HomeTab.Planner)
-            HomeTab.Planner -> confirmExit = true
+            HomeTab.Planner -> selectTab(HomeTab.Explore)
+            HomeTab.Explore -> if (onReturnToItinerary != null) onReturnToItinerary() else confirmExit = true
         }
     }
     if (confirmExit) {
@@ -167,7 +168,7 @@ internal fun PlannerScaffold(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(
-                    modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth(),
+                    modifier = Modifier.widthIn(max = if (tab == HomeTab.Explore) 1080.dp else 560.dp).fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
                     if (tab == HomeTab.Planner) PlannerHero()

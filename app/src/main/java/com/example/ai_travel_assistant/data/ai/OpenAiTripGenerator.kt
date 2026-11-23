@@ -1,5 +1,7 @@
 package com.example.ai_travel_assistant.data.ai
 
+import android.os.SystemClock
+import android.util.Log
 import com.example.ai_travel_assistant.domain.trip.GenerationException
 import com.example.ai_travel_assistant.domain.trip.Itinerary
 import com.example.ai_travel_assistant.domain.trip.PlanFailure
@@ -22,14 +24,18 @@ private const val ReadTimeoutMillis = 90_000
 internal class OpenAiTripGenerator(private val apiKey: String) : TripGenerator {
     override suspend fun generate(request: TripRequest, language: String): Itinerary =
         withContext(Dispatchers.IO) {
+            val started = SystemClock.elapsedRealtime()
             try {
-                readItinerary(readOpenAiText(createResponse(request.prompt(language))))
+                readGeneratedItinerary(readOpenAiText(createResponse(request.prompt(language))), request)
             } catch (_: SocketTimeoutException) {
+                Log.w("TravelAI", "provider=openai failure=Timeout")
                 throw GenerationException(PlanFailure.Timeout)
             } catch (_: IOException) {
                 throw GenerationException(PlanFailure.Network)
             } catch (_: JSONException) {
                 throw GenerationException(PlanFailure.Unknown)
+            } finally {
+                Log.i("TravelAI", "provider=openai model=$ItineraryModel elapsedMs=${SystemClock.elapsedRealtime() - started}")
             }
         }
 
@@ -37,6 +43,7 @@ internal class OpenAiTripGenerator(private val apiKey: String) : TripGenerator {
         val body = JSONObject()
             .put("model", ItineraryModel)
             .put("input", prompt)
+            .put("reasoning", JSONObject().put("effort", "low"))
             .put("store", false)
             .put("text", JSONObject().put("format", JSONObject().put("type", "json_object")))
             .toString().toByteArray(Charsets.UTF_8)

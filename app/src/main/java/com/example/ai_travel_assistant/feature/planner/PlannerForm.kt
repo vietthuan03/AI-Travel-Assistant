@@ -1,5 +1,9 @@
 package com.example.ai_travel_assistant.feature.planner
 
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,11 +18,13 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import com.example.ai_travel_assistant.feature.explore.BookingType
@@ -29,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -37,12 +44,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ai_travel_assistant.R
+import com.example.ai_travel_assistant.domain.trip.TripDayMillis
 import com.example.ai_travel_assistant.domain.trip.TripRequest
+import com.example.ai_travel_assistant.domain.trip.timingAt
 import com.example.ai_travel_assistant.ui.format.TripBudgetVisualTransformation
 import com.example.ai_travel_assistant.ui.format.asDisplayDate
 import com.example.ai_travel_assistant.ui.format.formatTripBudget
 import com.example.ai_travel_assistant.ui.format.normalizeTripBudget
+import com.example.ai_travel_assistant.ui.format.tripCityTimeZone
 import com.example.ai_travel_assistant.ui.theme.AiTravelAssistantTheme
+import kotlinx.coroutines.delay
 
 
 private val GenerateButtonMinHeight = 56.dp
@@ -88,7 +99,12 @@ internal fun PlannerForm(
         stringResource(R.string.trip_budget_summary, formatTripBudget(it.toString()), currency)
     }
     val loading = state is PlannerUiState.Loading
-    val request = TripRequest(origin, destination, departure, returnDate, purpose, styles[pace], notes, amount, currency)
+    val resources = LocalResources.current
+    val request = TripRequest(
+        origin, destination, departure, returnDate, purpose, styles[pace], notes, amount, currency,
+        originTimeZone = resources.tripCityTimeZone(origin),
+        destinationTimeZone = resources.tripCityTimeZone(destination),
+    )
     val canGenerate = !loading && request.hasRequiredDetails &&
         origin in cities && destination in cities && purpose in purposes
     val submittedRoute = if (submittedOrigin.isBlank()) {
@@ -98,8 +114,9 @@ internal fun PlannerForm(
     }
 
     val focusManager = LocalFocusManager.current
-    var tab by rememberSaveable { mutableStateOf(HomeTab.Planner) }
+    var tab by rememberSaveable { mutableStateOf(HomeTab.Explore) }
     val tabState = rememberSaveableStateHolder()
+    var returnToItinerary by rememberSaveable { mutableStateOf(false) }
     var requestedBooking by rememberSaveable { mutableStateOf<BookingType?>(null) }
     var scrollTarget by remember { mutableStateOf<BringIntoViewRequester?>(null) }
     val tripDetailsRequester = remember { BringIntoViewRequester() }
@@ -114,7 +131,17 @@ internal fun PlannerForm(
 
     PlannerScaffold(
         tab = tab,
-        selectTab = { tab = it },
+        selectTab = {
+            returnToItinerary = false
+            tab = it
+        },
+        onReturnToItinerary = if (returnToItinerary && state is PlannerUiState.Success) {
+            {
+                returnToItinerary = false
+                tab = HomeTab.Planner
+                scrollTarget = itineraryRequester
+            }
+        } else null,
         onExit = onExit,
         openAiSettings = openAiSettings,
         historyEnabled = !loading,
@@ -221,6 +248,25 @@ internal fun PlannerForm(
             )
         }
 
+        val currentTime by produceState(System.currentTimeMillis()) {
+            while (true) {
+                value = System.currentTimeMillis()
+                delay(60_000L - value % 60_000L)
+            }
+        }
+        val timing = request.timingAt(currentTime)
+        if (origin in cities && destination in cities && timing.lateDeparture) {
+            Column {
+                Text(stringResource(R.string.plan_late_departure), style = MaterialTheme.typography.bodyMedium)
+                if (returnDate == departure) {
+                    val nextDay = departure + TripDayMillis
+                    TextButton(onClick = { returnDate = nextDay }, enabled = !loading) {
+                        Text(stringResource(R.string.plan_extend_return, nextDay.asDisplayDate(locale)))
+                    }
+                }
+            }
+        }
+
         Button(
             onClick = {
                 focusManager.clearFocus()
@@ -234,6 +280,8 @@ internal fun PlannerForm(
             modifier = Modifier.fillMaxWidth().heightIn(min = GenerateButtonMinHeight),
             shape = MaterialTheme.shapes.small,
         ) {
+            Icon(painterResource(R.drawable.ic_trip_ai), contentDescription = null)
+            Spacer(Modifier.width(8.dp))
             Text(
                 text = stringResource(if (loading) R.string.loading_plan else R.string.generate),
                 style = MaterialTheme.typography.titleSmall,
@@ -243,6 +291,7 @@ internal fun PlannerForm(
         PlannerResult(state, submittedRoute, submittedDetails, submittedDestination, itineraryRequester) { type ->
             if (state is PlannerUiState.Success) {
                 focusManager.clearFocus()
+                returnToItinerary = true
                 requestedBooking = type
                 tab = HomeTab.Explore
             }

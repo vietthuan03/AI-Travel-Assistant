@@ -65,21 +65,46 @@ internal fun ExploreScreen(
     val city = itineraryBooking?.trip?.destination ?: cities.getOrNull(cityIndex).orEmpty()
     var booking by rememberSaveable { mutableStateOf<BookingType?>(null) }
     val forms = rememberSaveableStateHolder()
-    ExploreDestination(cities, city) { cityIndex = cities.indexOf(it) }
-    if (city.isEmpty()) return
-
-    Button(onClick = { onPlan(city) }, enabled = canPlan, modifier = Modifier.fillMaxWidth()) {
-        Icon(painterResource(R.drawable.ic_trip_calendar), null)
-        Spacer(Modifier.width(8.dp))
-        Text(stringResource(R.string.explore_plan))
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        BookingType.entries.forEach { type ->
-            OutlinedCard(onClick = { booking = type }, modifier = Modifier.weight(1f)) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(painterResource(if (type == BookingType.Flight) R.drawable.ic_explore_flight
-                        else R.drawable.ic_explore_stay), null, tint = MaterialTheme.colorScheme.primary)
-                    Text(stringResource(type.label), style = MaterialTheme.typography.titleMedium)
+    var choosing by rememberSaveable { mutableStateOf(false) }
+    var pendingBooking by rememberSaveable { mutableStateOf<BookingType?>(null) }
+    ExploreDestination(
+        cities = cities,
+        city = city,
+        choosing = choosing,
+        onChoose = { choosing = true },
+        onDismiss = {
+            choosing = false
+            pendingBooking = null
+        },
+        onSelect = { selected ->
+            cityIndex = cities.indexOf(selected)
+            choosing = false
+            booking = pendingBooking
+            pendingBooking = null
+        },
+    ) {
+        if (city.isNotEmpty()) {
+            Button(onClick = { onPlan(city) }, enabled = canPlan, modifier = Modifier.fillMaxWidth()) {
+                Icon(painterResource(R.drawable.ic_trip_ai), null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.explore_plan))
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            BookingType.entries.forEach { type ->
+                OutlinedCard(onClick = {
+                    if (city.isEmpty()) {
+                        pendingBooking = type
+                        choosing = true
+                    } else {
+                        booking = type
+                    }
+                }, modifier = Modifier.weight(1f)) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(painterResource(if (type == BookingType.Flight) R.drawable.ic_explore_flight
+                            else R.drawable.ic_explore_stay), null, tint = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(type.label), style = MaterialTheme.typography.titleMedium)
+                    }
                 }
             }
         }

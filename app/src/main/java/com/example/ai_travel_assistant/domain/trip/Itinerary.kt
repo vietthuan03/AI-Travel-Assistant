@@ -2,7 +2,7 @@ package com.example.ai_travel_assistant.domain.trip
 
 internal data class Itinerary(val text: String, val days: List<ItineraryDay>?)
 
-internal data class ItineraryDay(val title: String, val stops: List<ItineraryStop>)
+internal data class ItineraryDay(val title: String, val stops: List<ItineraryStop>, val date: String = "")
 
 internal data class ItineraryStop(
     val time: String,

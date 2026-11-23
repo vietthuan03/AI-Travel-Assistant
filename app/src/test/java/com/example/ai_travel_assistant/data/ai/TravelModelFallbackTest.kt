@@ -82,6 +82,28 @@ class TravelModelFallbackTest {
         assertEquals(PlanFailure.Quota, cooldownFailure.failure)
     }
 
+    @Test fun timeoutTriesTheNextModel() = runBlocking {
+        val fallback = TravelModelFallback({ 0L }, { PlanFailure.Timeout }) { _, _, _ -> }
+        val calls = mutableListOf<String>()
+        val result = fallback.generate { model ->
+            calls += model
+            if (calls.size == 1) throw java.net.SocketTimeoutException()
+            "itinerary"
+        }
+        assertEquals("itinerary", result)
+        assertEquals(listOf("gemini-3.8-flash", "gemini-3.5-flash-lite"), calls)
+    }
+
+    @Test fun repeatedTimeoutStopsAfterTwoAttempts() = runBlocking {
+        val fallback = TravelModelFallback({ 0L }, { PlanFailure.Timeout }) { _, _, _ -> }
+        var calls = 0
+        val error = runCatching {
+            fallback.generate { calls++; throw java.net.SocketTimeoutException() }
+        }.exceptionOrNull() as GenerationException
+        assertEquals(PlanFailure.Timeout, error.failure)
+        assertEquals(2, calls)
+    }
+
     @Test fun blankResponseKeepsItsFailureReason() = runBlocking {
         val fallback = TravelModelFallback({ 0L }, { PlanFailure.Quota }) { _, _, _ -> }
         val failure = runCatching { fallback.generate { " " } }.exceptionOrNull() as GenerationException

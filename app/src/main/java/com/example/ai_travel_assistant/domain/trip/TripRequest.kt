@@ -10,6 +10,8 @@ internal data class TripRequest(
     val notes: String,
     val budgetAmount: Long? = null,
     val budgetCurrency: String = "VND",
+    val originTimeZone: String? = null,
+    val destinationTimeZone: String? = null,
 ) {
     val hasInvalidDates: Boolean
         get() = departure != null && returnDate != null && returnDate < departure

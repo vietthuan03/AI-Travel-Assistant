@@ -16,6 +16,7 @@ import com.google.firebase.ai.type.InvalidAPIKeyException
 import com.google.firebase.ai.type.PermissionMissingException
 import com.google.firebase.ai.type.PromptBlockedException
 import com.google.firebase.ai.type.QuotaExceededException
+import com.google.firebase.ai.type.RequestOptions
 import com.google.firebase.ai.type.RequestTimeoutException
 import com.google.firebase.ai.type.ResponseStoppedException
 import com.google.firebase.ai.type.ServerException
@@ -31,13 +32,18 @@ internal class FirebaseTripGenerator : TripGenerator {
     override suspend fun generate(request: TripRequest, language: String): Itinerary {
         val prompt = request.prompt(language)
         val text = fallback.generate { model ->
-            val text = Firebase.ai(backend = GenerativeBackend.googleAI())
-                .generativeModel(modelName = model)
-                .generateContent(prompt).text
+            val started = SystemClock.elapsedRealtime()
+            val text = try {
+                Firebase.ai(backend = GenerativeBackend.googleAI())
+                    .generativeModel(modelName = model, requestOptions = RequestOptions(ModelRequestTimeoutMillis))
+                    .generateContent(prompt).text
+            } finally {
+                Log.i("TravelAI", "provider=firebase model=$model elapsedMs=${SystemClock.elapsedRealtime() - started}")
+            }
             if (!text.isNullOrBlank()) Log.i("TravelAI", "model=$model result=success")
             text
         }
-        return readItinerary(text)
+        return readGeneratedItinerary(text, request)
     }
 
     private fun reportFailure(model: String, failure: PlanFailure, error: Exception?) {
@@ -75,6 +81,7 @@ internal fun Throwable.toPlanFailure(): PlanFailure {
                     when {
                         "resource exhausted" in message || "resource_exhausted" in message ||
                             "rate limit" in message -> PlanFailure.Quota
+                        "deadline_exceeded" in message || "deadline exceeded" in message -> PlanFailure.Timeout
                         "app check" in message -> PlanFailure.Configuration
                         message.isModelUnavailable() -> PlanFailure.ModelUnavailable
                         else -> null

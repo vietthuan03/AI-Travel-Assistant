@@ -45,6 +45,12 @@ internal fun ItineraryTimeline(days: List<ItineraryDay>, destination: String) {
                 if (day.title.isNotBlank()) {
                     Text(day.title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
                 }
+                if (day.date.isNotBlank()) {
+                    Text(day.date, style = MaterialTheme.typography.labelMedium)
+                }
+                if (day.stops.isEmpty()) {
+                    Text(stringResource(R.string.plan_no_remaining_stops), style = MaterialTheme.typography.bodyMedium)
+                }
                 day.stops.forEachIndexed { stopIndex, stop ->
                     TimelineStop(stop, destination, stopIndex < day.stops.lastIndex)
                 }

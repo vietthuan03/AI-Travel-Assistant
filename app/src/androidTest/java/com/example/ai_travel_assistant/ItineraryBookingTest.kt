@@ -3,6 +3,7 @@ package com.example.ai_travel_assistant
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -49,6 +50,8 @@ class ItineraryBookingTest {
                 PlannerForm(success, generate = { _, _ -> }, onExit = {}, openHistory = {})
             }
         }
+        compose.onNodeWithContentDescription(context.getString(R.string.planner_open_menu)).performClick()
+        control(R.string.planner_menu_trip_details).performClick()
         control(R.string.destination).performScrollTo().performClick()
         compose.onNodeWithText(context.getString(R.string.city_hcmc)).performClick()
 

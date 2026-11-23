@@ -109,6 +109,7 @@ private fun PlanResultContent(
                         PlanFailure.Configuration, PlanFailure.ModelUnavailable -> R.string.plan_error_configuration
                         PlanFailure.Blocked -> R.string.plan_error_blocked
                         PlanFailure.EmptyResponse -> R.string.plan_error_empty
+                        PlanFailure.InvalidSchedule -> R.string.plan_error_invalid_schedule
                         PlanFailure.Unknown -> R.string.retry_hint
                     }
                 ),
@@ -125,6 +126,7 @@ private fun PlanResultContent(
             }
             ItineraryCard(state.itinerary, result.route, if (state.saveFailed) Modifier else status,
                 result.details, result.destination)
+            Text(stringResource(R.string.plan_timing_result_note), style = MaterialTheme.typography.bodySmall)
             BookingType.entries.forEach { type ->
                 OutlinedButton(onClick = { onBook(type) }, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(type.label))

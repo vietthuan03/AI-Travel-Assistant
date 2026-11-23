@@ -20,7 +20,7 @@
     <string name="active">Năng động</string>
     <string name="preferences">Ghi chú (tùy chọn)</string>
     <string name="preferences_example">Ví dụ thích ẩm thực địa phương, tránh đi quá sớm</string>
-    <string name="generate">Tạo lịch trình</string>
+    <string name="generate">Tạo lịch trình bằng AI</string>
     <string name="loading_plan">Đang tạo lịch trình…</string>
     <string name="failed_plan">Chưa tạo được lịch trình</string>
     <string name="result_plan">Lịch trình gợi ý</string>
@@ -84,7 +84,7 @@
     <string name="tab_planner">Lịch trình</string>
     <string name="tab_explore">Khám phá</string>
     <string name="explore_destination">Điểm đến</string>
-    <string name="explore_plan">Lập lịch trình</string>
+    <string name="explore_plan">Lên lịch trình bằng AI</string>
     <string name="explore_flights">Tìm chuyến bay</string>
     <string name="explore_stays">Tìm phòng</string>
     <string name="explore_from">Sân bay đi</string>
@@ -148,4 +148,14 @@
     <string name="openai_invalid_format">Nhập API key bắt đầu bằng sk-.</string>
     <string name="openai_use">Dùng OpenAI</string>
     <string name="openai_use_gemini">Chuyển về Gemini</string>
+    <string name="explore_no_destinations">Không tìm thấy điểm đến phù hợp.</string>
+    <string name="explore_clear_search">Xóa tìm kiếm</string>
+    <string name="explore_danang_summary">Bắt đầu từ bờ biển, bờ sông và bán đảo Sơn Trà.</string>
+    <string name="explore_hanoi_summary">Khám phá phố cổ và khu vực quanh hồ Hoàn Kiếm.</string>
+    <string name="explore_hcmc_summary">Bắt đầu từ trung tâm, bờ sông và các bảo tàng lân cận.</string>
+    <string name="plan_error_invalid_schedule">Chưa tạo được lịch phù hợp với khung thời gian đã chọn. Hãy kiểm tra ngày và thử lại.</string>
+    <string name="plan_timing_result_note">Giờ trong lịch là gợi ý theo múi giờ điểm đến. Hãy xác nhận giờ bay, giờ nhận phòng và giờ mở cửa với nhà cung cấp.</string>
+    <string name="plan_no_remaining_stops">Không còn hoạt động phù hợp cho ngày này.</string>
+    <string name="plan_late_departure">Khởi hành muộn hôm nay, hãy ưu tiên di chuyển, nhận phòng nếu cần và nghỉ ngơi. Có thể dành ngày tiếp theo để tham quan.</string>
+    <string name="plan_extend_return">Đổi ngày về sang %1$s</string>
 </resources>

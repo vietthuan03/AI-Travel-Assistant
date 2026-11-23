@@ -22,7 +22,7 @@
     <string name="active">Active</string>
     <string name="preferences">Trip preferences (optional)</string>
     <string name="preferences_example">e.g. local food, no early starts</string>
-    <string name="generate">Generate itinerary</string>
+    <string name="generate">Generate itinerary with AI</string>
     <string name="loading_plan">Creating your itinerary…</string>
     <string name="failed_plan">Could not create itinerary</string>
     <string name="result_plan">Suggested itinerary</string>
@@ -99,7 +99,7 @@
     <string name="tab_planner">Planner</string>
     <string name="tab_explore">Explore</string>
     <string name="explore_destination">Destination</string>
-    <string name="explore_plan">Plan a trip</string>
+    <string name="explore_plan">Plan with AI</string>
     <string name="explore_flights">Find flights</string>
     <string name="explore_stays">Find rooms</string>
     <string name="explore_from">Departure airport</string>
@@ -163,4 +163,14 @@
     <string name="openai_invalid_format">Enter an API key that starts with sk-.</string>
     <string name="openai_use">Use OpenAI</string>
     <string name="openai_use_gemini">Switch to Gemini</string>
+    <string name="explore_no_destinations">No matching destinations.</string>
+    <string name="explore_clear_search">Clear search</string>
+    <string name="explore_danang_summary">Start with the coast, riverfront and Sơn Trà Peninsula.</string>
+    <string name="explore_hanoi_summary">Explore the Old Quarter and the area around Hoàn Kiếm Lake.</string>
+    <string name="explore_hcmc_summary">Start with the city centre, riverside and nearby museums.</string>
+    <string name="plan_error_invalid_schedule">No usable schedule was returned for these dates. Check your dates and try again.</string>
+    <string name="plan_timing_result_note">Times are suggestions in the destination’s time zone. Confirm actual flight times, check-in and opening hours with the provider.</string>
+    <string name="plan_no_remaining_stops">There are no suitable activities left for this day.</string>
+    <string name="plan_late_departure">For a late departure today, plan for getting there, check-in if needed, and rest. Allow another day for sightseeing.</string>
+    <string name="plan_extend_return">Change return date to %1$s</string>
 </resources>

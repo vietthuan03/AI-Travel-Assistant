@@ -9,7 +9,7 @@ internal fun interface TripGenerator {
 internal class GenerationException(val failure: PlanFailure) : Exception(failure.name)
 
 internal enum class PlanFailure {
-    Network, Timeout, Quota, ModelUnavailable, TokenLimit, Configuration, Blocked, EmptyResponse, Unknown
+    Network, Timeout, Quota, ModelUnavailable, TokenLimit, Configuration, Blocked, EmptyResponse, InvalidSchedule, Unknown
 }
 
 internal data class GeneratedTrip(val itinerary: Itinerary, val saved: Boolean)

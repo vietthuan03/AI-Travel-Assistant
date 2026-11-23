@@ -20,68 +20,144 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.ai_travel_assistant.R
+import java.text.Normalizer
+import java.util.Locale
+
+private data class DestinationArt(val city: Int, val photo: Int, val description: Int? = null)
+
+private val destinationArt = listOf(
+    DestinationArt(R.string.city_danang, R.drawable.explore_danang, R.string.explore_danang_summary),
+    DestinationArt(R.string.city_hanoi, R.drawable.explore_hanoi, R.string.explore_hanoi_summary),
+    DestinationArt(R.string.city_hcmc, R.drawable.explore_hcmc, R.string.explore_hcmc_summary),
+    DestinationArt(R.string.city_dalat, R.drawable.explore_dalat),
+    DestinationArt(R.string.city_nhatrang, R.drawable.explore_nhatrang),
+    DestinationArt(R.string.city_bangkok, R.drawable.explore_bangkok),
+    DestinationArt(R.string.city_singapore, R.drawable.explore_singapore),
+    DestinationArt(R.string.city_tokyo, R.drawable.explore_tokyo),
+    DestinationArt(R.string.city_seoul, R.drawable.explore_seoul),
+    DestinationArt(R.string.city_ahmedabad, R.drawable.explore_ahmedabad),
+    DestinationArt(R.string.city_goa, R.drawable.explore_goa),
+)
+private val combiningMarks = Regex("\\p{M}+")
 
 @Composable
-internal fun ExploreDestination(cities: List<String>, city: String, onSelect: (String) -> Unit) {
-    var choosing by rememberSaveable { mutableStateOf(false) }
-    val daNang = stringResource(R.string.city_danang)
-    val hanoi = stringResource(R.string.city_hanoi)
-    val photo = when (city) {
-        "" -> R.drawable.explore_coast
-        daNang -> R.drawable.explore_danang
-        hanoi -> R.drawable.explore_hanoi
-        else -> null
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (photo != null) {
-            Box(Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraLarge)) {
-                Image(painterResource(photo), null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
+internal fun ExploreDestination(
+    cities: List<String>,
+    city: String,
+    choosing: Boolean,
+    onChoose: () -> Unit,
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit,
+    actions: @Composable () -> Unit,
+) {
+    val photos = destinationArt.associateBy { stringResource(it.city) }
+    val selected = photos[city]
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val wide = maxWidth >= 700.dp
+        if (city.isNotEmpty() && wide) {
+            Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                DestinationCover(selected?.photo ?: R.drawable.explore_coast, Modifier.weight(1.5f), 300)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    DestinationHeading(city, selected, onChoose)
+                    actions()
+                }
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (city.isEmpty()) {
-                    Column(Modifier.fillMaxWidth().heightIn(min = 216.dp)
-                        .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = .7f))))
-                        .padding(16.dp), verticalArrangement = Arrangement.Bottom) {
-                        Text(stringResource(R.string.tab_explore), color = Color.White,
-                            style = MaterialTheme.typography.headlineLarge, modifier = Modifier.semantics { heading() })
-                        Spacer(Modifier.height(8.dp))
-                        FilledTonalButton(onClick = { choosing = true }, modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(R.string.explore_choose_city))
-                        }
+                    Text(stringResource(R.string.tab_explore), style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier.semantics { heading() })
+                    Button(onClick = onChoose, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.explore_choose_city))
                     }
-                } else Spacer(Modifier.height(184.dp))
+                    actions()
+                } else {
+                    DestinationCover(selected?.photo ?: R.drawable.explore_coast, Modifier.fillMaxWidth(), 220)
+                    DestinationHeading(city, selected, onChoose)
+                    actions()
+                }
             }
         }
-        if (city.isEmpty()) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                listOf(daNang to R.drawable.explore_danang, hanoi to R.drawable.explore_hanoi)
-                    .filter { it.first in cities }.forEach { (name, image) ->
-                        Card(onClick = { onSelect(name) }, modifier = Modifier.weight(1f)) {
-                            Box(Modifier.fillMaxWidth().heightIn(min = 144.dp), contentAlignment = Alignment.BottomStart) {
-                                Image(painterResource(image), null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
-                                Text(name.substringBefore(','), Modifier.fillMaxWidth()
-                                    .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = .82f))))
-                                    .padding(12.dp), color = Color.White, style = MaterialTheme.typography.titleMedium)
+    }
+    if (city.isEmpty()) {
+        val featured = photos.entries.take(3).filter { it.key in cities }
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val columns = if (maxWidth >= 700.dp) 3 else 1
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                featured.chunked(columns).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        row.forEach { (name, art) ->
+                            Card(onClick = { onSelect(name) }, modifier = Modifier.weight(1f)) {
+                                Box(Modifier.fillMaxWidth().heightIn(min = 172.dp), contentAlignment = Alignment.BottomStart) {
+                                    Image(painterResource(art.photo), null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
+                                    Text(
+                                        name.substringBefore(','),
+                                        Modifier.fillMaxWidth()
+                                            .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = .85f))))
+                                            .padding(16.dp),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.titleLarge,
+                                    )
+                                }
                             }
                         }
                     }
-            }
-        } else {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(city.substringBefore(','), Modifier.weight(1f).semantics { heading() },
-                    style = MaterialTheme.typography.headlineMedium)
-                TextButton(onClick = { choosing = true }) { Text(stringResource(R.string.explore_change_city)) }
+                }
             }
         }
     }
-    if (choosing) AlertDialog(onDismissRequest = { choosing = false },
-        title = { Text(stringResource(R.string.explore_destination)) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                cities.forEach { option ->
-                    TextButton(onClick = { onSelect(option); choosing = false }, modifier = Modifier.fillMaxWidth()) {
-                        Text(option, modifier = Modifier.fillMaxWidth())
+    if (choosing) {
+        var query by rememberSaveable { mutableStateOf("") }
+        val filter = query.trim().forDestinationSearch()
+        val matching = cities.filter { it.forDestinationSearch().contains(filter) }
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(R.string.explore_destination)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text(stringResource(R.string.explore_choose_city)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    if (matching.isEmpty()) {
+                        Text(stringResource(R.string.explore_no_destinations))
+                        TextButton(onClick = { query = "" }) { Text(stringResource(R.string.explore_clear_search)) }
+                    }
+                    Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+                        matching.forEach { option ->
+                            TextButton(onClick = { onSelect(option) }, modifier = Modifier.fillMaxWidth()) {
+                                photos[option]?.let {
+                                    Image(painterResource(it.photo), null, Modifier.size(52.dp, 36.dp)
+                                        .clip(MaterialTheme.shapes.small), contentScale = ContentScale.Crop)
+                                    Spacer(Modifier.width(12.dp))
+                                }
+                                Text(option, modifier = Modifier.weight(1f))
+                            }
+                        }
                     }
                 }
-            }
-        },
-        confirmButton = { TextButton(onClick = { choosing = false }) { Text(stringResource(R.string.history_close)) } })
+            },
+            confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.history_close)) } },
+        )
+    }
 }
+
+@Composable
+private fun DestinationHeading(city: String, art: DestinationArt?, onChoose: () -> Unit) {
+    Text(city.substringBefore(','), Modifier.semantics { heading() }, style = MaterialTheme.typography.headlineMedium)
+    art?.description?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyLarge) }
+    TextButton(onClick = onChoose) { Text(stringResource(R.string.explore_change_city)) }
+}
+
+@Composable
+private fun DestinationCover(photo: Int, modifier: Modifier, height: Int) {
+    Image(painterResource(photo), null, modifier.height(height.dp).clip(MaterialTheme.shapes.extraLarge),
+        contentScale = ContentScale.Crop)
+}
+
+private fun String.forDestinationSearch(): String =
+    Normalizer.normalize(lowercase(Locale.ROOT), Normalizer.Form.NFD)
+        .replace(combiningMarks, "").replace('đ', 'd')
